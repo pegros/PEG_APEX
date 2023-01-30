@@ -2,7 +2,7 @@
 * @description  Test class for sfpegDebug_UTL
 * @author       P-E GROS
 * @date         Jan 2023
-* @see PEG_U package (https://github.com/pegros/PEG_APEX)
+* @see PEG_APEX package (https://github.com/pegros/PEG_APEX)
 *
 * Legal Notice
 *
