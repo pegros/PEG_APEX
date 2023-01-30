@@ -16,10 +16,11 @@ from implicit data `toString()` serializations.
 are deactivated on the User via Salesforce standard mechanisms. This comes among others from the 
 string concatenations and implicit Object `toString()` serializations executed before evaluating
 the actual logging level of the User, e.g. as in:
+
 ```System.debug(LoggingLevel.FINE,'Account created --> ' + newAccount);```
 
 The strategy is therefore to avoid these implicit serializations by testing the current User
-logging level before generating the `System.debug()`statements and the parameter serializations.
+logging level before generating the `System.debug()` statements and the parameter serializations.
 
 As the standard User current debug level is not accessible from Apex, the **sfpegDebugSetting**
 hierarchical custom setting has been defined with a **maximum debug level** parameter leveraged 
@@ -34,7 +35,8 @@ When multiple logs are generated, it is not often easy to find which piece of co
 generated it. It often relies on the Apex developer to provide information about the 
 origin class and method, each developer often having also its own way to format debug logs.
 
-The proposed approach is to standardise all debug logs in the following way
+The proposed approach is to standardise all debug logs in the following way:
+
 ```className | methodName | text message | additional info (optional)```
 
 Class and method names are automatically added by the utility class and the developer
