@@ -24,7 +24,7 @@ from implicit data `toString()` serializations.
 ## Interesting Links
 ### Naming Conventions
 
-* see [Trailhead](https://trailhead.salesforce.com/content/learn/modules/success-cloud-coding-conventions)
+* see [Success Cloud Coding Conventions](https://trailhead.salesforce.com/content/learn/modules/success-cloud-coding-conventions) on Trailhead.
 
 ### Triggers & Bypass
 Various Frameworks are available to structure Trigger logic and ensure logic bypass on demand.
