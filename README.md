@@ -38,7 +38,7 @@ Some interesting solutions are available here:
 Logging some transactions may be required on a permanent basis to monitor the platform (i.e. not for debug),
 possibly in addition to standard **Shield Event Monitoring** feature.
 Some interesting solutions are available here:
-* [Nebula Logger](https://github.com/jongpie/NebulaLogger)
+* [Nebula Logger by Jonathan Gillespie](https://github.com/jongpie/NebulaLogger)
 * [Simple Logger by T. Prouvost](https://github.com/tprouvot/gener-log-framework)
 
 ## Technical Details
