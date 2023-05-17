@@ -21,6 +21,11 @@ Apex code. Its primary objective is to keep all detailed debug statements in the
 any investigation on a production Org when necessary, without having too much performance impact coming
 from implicit data `toString()` serializations.
 
+### [sfpegQueueableUtility](help/sfpegQueueableUtility.md)
+The **sfpegQueueable_UTL** Apex class provides various utilities to manage asynchronous Queueable Apex
+processes: Singleton process execution control (e.g. triggered from Apex trigger), aggregated
+Queueable execution statistics logging and aggregation.
+
 ## Interesting Links
 ### Naming Conventions
 
@@ -39,7 +44,6 @@ Logging some transactions may be required on a permanent basis to monitor the pl
 possibly in addition to standard **Shield Event Monitoring** feature.
 Some interesting solutions are available here:
 * [Nebula Logger by Jonathan Gillespie](https://github.com/jongpie/NebulaLogger)
-* [Simple Logger by T. Prouvost](https://github.com/tprouvot/gener-log-framework)
 
 ## Technical Details
 
