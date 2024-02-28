@@ -32,7 +32,7 @@
 
 @SuppressWarnings('PMD.ClassNamingConventions')
 @isTest
-public with sharing class sfpegQueueable_UTL_TST {
+public with sharing class sfpegQueueable_TST {
 
     // Testing Singleton Control 
     @isTest
