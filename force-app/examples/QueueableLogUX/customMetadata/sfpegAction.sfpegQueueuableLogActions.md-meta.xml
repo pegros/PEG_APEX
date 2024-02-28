@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>QueueuableLog Actions</label>
+    <protected>false</protected>
+    <values>
+        <field>Actions__c</field>
+        <value xsi:type="xsd:string">[
+{
+    &quot;name&quot;: &quot;CheckLaunch&quot;, &quot;label&quot;: &quot;CheckLaunch&quot;,
+    &quot;action&quot;: {
+        &quot;type&quot;: &quot;apex&quot;,
+        &quot;params&quot;: {
+            &quot;name&quot;: &quot;sfpegQueueableLaunch_SVC&quot;,
+            &quot;params&quot;: {
+                &quot;CLASS&quot;: &quot;{{{RCD.ProcessName__c}}}&quot;
+            }
+        }
+    }
+}
+]</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">Custom actions for the sfpegQueueableLog__c record detail page.
+Part of the PEG_APEX package leveraging the PEG_LIST action framework.</value>
+    </values>
+    <values>
+        <field>DoEvaluation__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>NotificationChannels__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Permission__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Scope__c</field>
+        <value xsi:type="xsd:string">sfpegQueueableLog__c</value>
+    </values>
+</CustomMetadata>

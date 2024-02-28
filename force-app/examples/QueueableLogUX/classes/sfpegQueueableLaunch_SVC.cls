@@ -48,8 +48,8 @@ public with sharing class sfpegQueueableLaunch_SVC extends sfpegAction_SVC  {
 		sfpegDebug_UTL.info('execute: START with input ',input);
 
         Map<Object,Object> inputMap = (Map<Object,Object>) input;
-        String queueableName = (String) inputMap.get('CLASS');
-        sfpegDebug_UTL.debug('execute: queueable name extracted ' + queueableName);
+        String queueableName = (String) inputMap?.get('CLASS');
+        sfpegDebug_UTL.debug('execute: queueable name extracted ', queueableName);
 
         if (String.isBlank(queueableName)) {
             sfpegDebug_UTL.error('END KO / Missing CLASS property in config');
