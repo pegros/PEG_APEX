@@ -592,8 +592,9 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         Map<Id,Schema.RecordTypeInfo> recordTypeMap;
         if (this.config.useRT) {
             sfpegDebug_UTL.debug('Group Naming with RT');
-            //recordTypeMap = Schema.getGlobalDescribe().get(this.config.structObject).getDescribe().getRecordTypeInfosById();
-            recordTypeMap = ((SObject)Type.forName(this.config.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
+            recordTypeMap = Schema.getGlobalDescribe().get(this.config.structObject).getDescribe().getRecordTypeInfosById();
+            //Change reversed because generating issue with standard Location object
+            //recordTypeMap = ((SObject)Type.forName(this.config.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
         }
 
         Map<String,Map<String,Group>> groupMap = new Map<String,Map<String,Group>>();
