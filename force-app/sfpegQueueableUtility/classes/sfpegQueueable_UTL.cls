@@ -76,7 +76,14 @@ public with sharing class sfpegQueueable_UTL {
         if (apexJobs.size() == 0) {
             sfpegDebug_UTL.debug('launching new queueable');
             Type qClass = Type.forName(qClassName);   
-            if(!Test.isRunningTest()){
+            sfpegDebug_UTL.finest('of type',qClass);
+            if (qClass == null) {
+                sfpegDebug_UTL.error('Queueable class not found!',qClassName);
+                Exception error = new System.NullPointerException();
+                error.setMessage(qClassName + ' Queueable class not found!');
+                throw error;
+            }
+            else if(!Test.isRunningTest()){
            		jobId = System.enqueueJob((Queueable)(qClass.newInstance()));
             }
         }
