@@ -16,6 +16,18 @@
             }
         }
     }
+},
+{
+&quot;name&quot;: &quot;StopQueueable&quot;, &quot;label&quot;: &quot;StopQueueable&quot;,
+&quot;action&quot;: {
+&quot;type&quot;: &quot;apex&quot;,
+&quot;params&quot;: {
+&quot;name&quot;: &quot;sfpegQueueableStop_SVC&quot;,
+&quot;params&quot;: {
+&quot;CLASS&quot;: &quot;{{{RCD.ProcessName__c}}}&quot;
+}
+}
+}
 }
 ]</value>
     </values>

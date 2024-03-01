@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>QueueableLog Latest Jobs</label>
+    <protected>false</protected>
+    <values>
+        <field>BypassEscaping__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>BypassFLS__c</field>
+        <value xsi:type="xsd:boolean">true</value>
+    </values>
+    <values>
+        <field>BypassSharing__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Description__c</field>
+        <value xsi:type="xsd:string">This configuration lists the 25 most recent Jobs for the current process (Apex Class) of the current QueueableLog record.</value>
+    </values>
+    <values>
+        <field>DisplayConfig__c</field>
+        <value xsi:type="xsd:string">{
+&quot;keyField&quot;:&quot;Id&quot;,
+&quot;widthMode&quot;:&quot;auto&quot;,
+&quot;stacked&quot;:false,
+&quot;title&quot;: {
+&quot;label&quot;: &quot;Id&quot;,
+&quot;fieldName&quot;: &quot;Id&quot;,
+&quot;sortable&quot;: true
+},
+&quot;columns&quot;: [
+{&quot;label&quot;:&quot;Id&quot;, &quot;fieldName&quot;: &quot;Id&quot;, &quot;sortable&quot;: &quot;true&quot;},
+{&quot;label&quot;:&quot;Status&quot;, &quot;fieldName&quot;: &quot;Status&quot;, &quot;sortable&quot;: &quot;true&quot;},
+{ &quot;label&quot;: &quot;Completed&quot;, &quot;fieldName&quot;: &quot;CompletedDate&quot;, &quot;type&quot;:&quot;date&quot;, &quot;typeAttributes&quot;:{&quot;year&quot;: &quot;numeric&quot;,&quot;month&quot;: &quot;long&quot;,&quot;day&quot;: &quot;2-digit&quot;,&quot;hour&quot;: &quot;2-digit&quot;,&quot;minute&quot;: &quot;2-digit&quot;},&quot;sortable&quot;: true},
+{&quot;label&quot;:&quot;Details&quot;, &quot;fieldName&quot;: &quot;ExtendedStatus&quot;, &quot;sortable&quot;: &quot;true&quot;}
+]
+}</value>
+    </values>
+    <values>
+        <field>DisplayType__c</field>
+        <value xsi:type="xsd:string">DataTable</value>
+    </values>
+    <values>
+        <field>DoPagination__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>FlattenResults__c</field>
+        <value xsi:type="xsd:boolean">false</value>
+    </values>
+    <values>
+        <field>Permission__c</field>
+        <value xsi:type="xsd:string">VIRTUO_ManageQueueable</value>
+    </values>
+    <values>
+        <field>QueryClass__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>QueryCount__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>QueryInput__c</field>
+        <value xsi:type="xsd:string">{
+     &quot;PRC&quot;:&quot;{{{RCD.ProcessName__c}}}&quot;
+}</value>
+    </values>
+    <values>
+        <field>QueryOrderBy__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>QueryOrder__c</field>
+        <value xsi:type="xsd:string">ASC</value>
+    </values>
+    <values>
+        <field>QuerySOQL__c</field>
+        <value xsi:type="xsd:string">SELECT Status, CompletedDate, ExtendedStatus FROM AsyncApexJob  WHERE JobType = &apos;Queueable&apos; AND ApexClass.Name = &apos;{{{PRC}}}&apos; ORDER BY Id desc LIMIT 25</value>
+    </values>
+    <values>
+        <field>QueryType__c</field>
+        <value xsi:type="xsd:string">SOQL</value>
+    </values>
+    <values>
+        <field>RowActions__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>Scope__c</field>
+        <value xsi:type="xsd:string">sfpegQueueableLog__c</value>
+    </values>
+</CustomMetadata>
