@@ -74,7 +74,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         public String   structChildren  = 'ChildLocations';         // API Name of the Structure Relation to access Data of the Children Structures
         public String   structMembers   = 'LocationUsers__r';       // API Name of the Structure Relation to access Data of the Structure Member Users
         public String   mbrObject       = 'LocationUsers__c';       // Structure User Member Object API Name
-        public String   mbrUser         = 'User__c';                // API Name of the User Member Lookup field providing the User ID fo a Structure Member
+        public String   mbrUser         = 'User__c';                // API Name of the User Member Lookup field providing the User ID for a Structure Member
         public String   structStatus    = 'SharingToEval__c';       // API Name of the Structure Boolean field indicating the Structures to process 
         public String   structTS        = 'SharingLastEval__c';     // API Name of the Structure DateTime field storin the last evaluation fo a Structure
     
@@ -90,7 +90,8 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         public String   structLocal     = 'SharingLocal__c';        // API Name of the Structure String field storing the Local Public Group ID
         public String   structUp        = 'SharingUp__c';           // API Name of the Structure String field storing the Upwards Public Group ID
         public String   structDown      = 'SharingDown__c';         // API Name of the Structure String field storing the Downwards Public Group ID
-        public String   mbrActive       = 'IsActive__c';            // API Name of the User Member Boolean field indicating if the Membership is active 
+        public String   structMbr       = '';                       // API Name of the Structure Member field storing a Public Group ID for Group Membership
+        public String   mbrActive       = 'IsActive__c';            // API Name of the User Member Boolean field indicating if the User Membership is active 
     }
 
 
@@ -245,10 +246,13 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 error.setMessage('Provided SharingConfiguration hierarchy parameter misses group field configuration');
                 throw error;
             }
+            if (String.isNotBlank(iter.structMbr)) {
+                this.groupFields.add(iter.structMbr);
+            }
             if (String.isNotBlank(iter.mbrActive)) {
                 this.memberFields.add(iter.mbrActive);
             }
-            else {
+            else if (String.isBlank(iter.structMbr)) {
                 sfpegDebug_UTL.error('END KO / Missing active membership property in hierarchy configuration');
                 Exception error = new System.NullPointerException();
                 error.setMessage('Provided SharingConfiguration hierarchy parameter misses active membership field configuration');
@@ -592,9 +596,9 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         Map<Id,Schema.RecordTypeInfo> recordTypeMap;
         if (this.config.useRT) {
             sfpegDebug_UTL.debug('Group Naming with RT');
-            recordTypeMap = Schema.getGlobalDescribe().get(this.config.structObject).getDescribe().getRecordTypeInfosById();
+            //recordTypeMap = Schema.getGlobalDescribe().get(this.config.structObject).getDescribe().getRecordTypeInfosById();
             //Change reversed because generating issue with standard Location object
-            //recordTypeMap = ((SObject)Type.forName(this.config.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
+            recordTypeMap = ((SObject)Type.forName('Schema.' + this.config.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
         }
 
         Map<String,Map<String,Group>> groupMap = new Map<String,Map<String,Group>>();
@@ -748,6 +752,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             Map<String,Set<ID>> iterGroupMap = new Map<String,Set<ID>>();
             this.structureGroupSetMap.put(iter.Id,iterGroupMap);
 
+            // Registering Up, Down and Local Groups and IDs of Groups for Local Group
             for (SharingHierarchy iterHV : this.config.hierarchies.values()) {
                 Set<ID> localGroupSet = new Set<ID>(); 
                 iterGroupMap.put(iterHV.structLocal,localGroupSet);
@@ -755,11 +760,16 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 iterGroupMap.put(iterHV.structUp,upGroupSet);
                 Set<ID> downGroupSet = new Set<ID>(); 
                 iterGroupMap.put(iterHV.structDown,downGroupSet);
+
+                if (String.isNotBlank(iterHV.structMbr)) {
+                    localGroupSet.add((ID) iter.get(iterHV.structMbr));
+                }
             }
 
             // Registering IDs of Users for Local Group
             if (iter.getSobjects(this.config.structMembers) != null) {
                 sfpegDebug_UTL.finest('Processing Structure Members');
+
                 List<SObject> iterMembers = (List<SObject>) iter.getSobjects(this.config.structMembers);
                 sfpegDebug_UTL.finest('#Structure Members provided',iterMembers.size());
 
@@ -907,27 +917,23 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
 
         Group lGroupDesc = this.groupMap.get((String)structure.get(hierarchy.structLocal));
         sfpegDebug_UTL.finest('Local Group fetched',lGroupDesc);
-        Set<ID> userMbrs = (this.structureGroupSetMap.get((String)structure.get('Id'))).get(hierarchy.structLocal);
-        sfpegDebug_UTL.finest('User Local Members fetched',userMbrs);
+        Set<ID> localMbrs = (this.structureGroupSetMap.get((String)structure.get('Id'))).get(hierarchy.structLocal);
+        sfpegDebug_UTL.finest('Local Members fetched',localMbrs);
 
-        Set<Id> lUsers = new Set<Id>();
+        Set<Id> lMembers = new Set<Id>();
         if (lGroupDesc.GroupMembers != null) {
             sfpegDebug_UTL.finest('Checking Local Group Members');
             for (GroupMember iterL : lGroupDesc.GroupMembers) {
                 string iterPrefix = ((String)(iterL.UserOrGroupId)).left(3);
-                if (iterPrefix == PREFIX_USER) {
-                    if (userMbrs.contains(iterL.UserOrGroupId)) {
-                        sfpegDebug_UTL.finest('leaving User GM in Local Group',iterL);
-                        lUsers.add(iterL.UserOrGroupId);
+                if ((iterPrefix == PREFIX_USER) || (iterPrefix == PREFIX_GROUP)) {
+                    if (localMbrs.contains(iterL.UserOrGroupId)) {
+                        sfpegDebug_UTL.finest('leaving GM in Local Group',iterL);
+                        lMembers.add(iterL.UserOrGroupId);
                     }
                     else {
-                        sfpegDebug_UTL.finest('Removing unexpected User GM in Local Group',iterL);
+                        sfpegDebug_UTL.finest('Removing unexpected GM in Local Group',iterL);
                         this.gm2remove.add(iterL.Id);
                     }
-                }
-                else if (iterPrefix == PREFIX_GROUP) {
-                    sfpegDebug_UTL.finest('Removing Group GM from Local Group',iterL);
-                    this.gm2remove.add(iterL.Id);
                 }
                 else {
                     // Unsupported Group member
@@ -941,12 +947,12 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         }
 
         // Checking missing members
-        for (Id iterId : userMbrs) {
-            if (lUsers.contains(iterId)) {
+        for (Id iterId : localMbrs) {
+            if (lMembers.contains(iterId)) {
                 sfpegDebug_UTL.finest('User GM already in Local Group',iterId);
             }
             else {
-                sfpegDebug_UTL.finest('Registering missing User GM in Local Group',iterId);                
+                sfpegDebug_UTL.finest('Registering missing GM in Local Group',iterId);                
                 this.gm2add.put(structure.get(hierarchy.structLocal) + '-' + iterId,
                                new GroupMember(	GroupId = (ID)structure.get(hierarchy.structLocal),
                                           		UserOrGroupId = iterId));

@@ -180,8 +180,9 @@ public with sharing class sfpegSharingGroupControl_UTL {
         sfpegDebug_UTL.fine('WaitTime evaluated',waitTime);
 
         if (this.sharingConfig.useRT) {
-            this.recordTypeMap = ((SObject)Type.forName(this.sharingConfig.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
-            //this.recordTypeMap = Schema.getGlobalDescribe().get(this.sharingConfig.structObject).getDescribe().getRecordTypeInfosById();
+            //this.recordTypeMap = ((SObject)Type.forName(this.sharingConfig.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
+            //Change reversed because generating issue with standard Location object
+            this.recordTypeMap = Schema.getGlobalDescribe().get('Schema.' + this.sharingConfig.structObject).getDescribe().getRecordTypeInfosById();
             sfpegDebug_UTL.debug('#RT fetched for Naming',this.recordTypeMap.size());
         }
 
