@@ -71,6 +71,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         public String   structObject    = 'Location';               // Hierarchical Structure Object API Name
         public String   structExtID     = 'ExternalId__c';          // API Name of the Structure External ID Field used for Public Group Naming
         public String   structParent    = 'ParentLocation';         // API Name of the Structure Relation to access Data of the Parent Structure
+        public String   structParentId  = 'ParentLocationId';       // API Name of the Structure lookup Field containing the ID of the Parent Structure
         public String   structChildren  = 'ChildLocations';         // API Name of the Structure Relation to access Data of the Children Structures
         public String   structMembers   = 'LocationUsers__r';       // API Name of the Structure Relation to access Data of the Structure Member Users
         public String   mbrObject       = 'LocationUsers__c';       // Structure User Member Object API Name
@@ -90,7 +91,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         public String   structLocal     = 'SharingLocal__c';        // API Name of the Structure String field storing the Local Public Group ID
         public String   structUp        = 'SharingUp__c';           // API Name of the Structure String field storing the Upwards Public Group ID
         public String   structDown      = 'SharingDown__c';         // API Name of the Structure String field storing the Downwards Public Group ID
-        public String   structMbr       = '';                       // API Name of the Structure Member field storing a Public Group ID for Group Membership
+        public List<String>   structMbrs;                           // List of API Names of Structure Member fields storing a Public Group ID for Group Membership
         public String   mbrActive       = 'IsActive__c';            // API Name of the User Member Boolean field indicating if the User Membership is active 
     }
 
@@ -108,6 +109,11 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     * @description  Set of Public Group identification fields on the Structure object
     ***/
     private Set<String> groupFields;
+
+    /***
+    * @description  Set of active membership fields on the Structure object
+    ***/
+    private Set<String> groupMemberFields;
 
     /***
     * @description  Set of active membership fields on the Membership object
@@ -232,6 +238,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         }
         this.config = config;
         this.groupFields = new Set<String>(); 
+        this.groupMemberFields = new Set<String>(); 
         this.memberFields = new Set<String>();
         for (SharingHierarchy iter : this.config.hierarchies.values()) {
             sfpegDebug_UTL.finest('Analysing hierarchy ',iter);
@@ -246,16 +253,16 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 error.setMessage('Provided SharingConfiguration hierarchy parameter misses group field configuration');
                 throw error;
             }
-            if (String.isNotBlank(iter.structMbr)) {
-                this.groupFields.add(iter.structMbr);
+            if (iter.structMbrs != null) {
+                this.groupMemberFields.addAll(iter.structMbrs);
             }
             if (String.isNotBlank(iter.mbrActive)) {
                 this.memberFields.add(iter.mbrActive);
             }
-            else if (String.isBlank(iter.structMbr)) {
-                sfpegDebug_UTL.error('END KO / Missing active membership property in hierarchy configuration');
+            else if (iter.structMbrs == null) {
+                sfpegDebug_UTL.error('END KO / Missing membership property in hierarchy configuration');
                 Exception error = new System.NullPointerException();
-                error.setMessage('Provided SharingConfiguration hierarchy parameter misses active membership field configuration');
+                error.setMessage('Provided SharingConfiguration hierarchy parameter misses membership field configuration');
                 throw error;
             }
         }
@@ -269,12 +276,13 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     *               requeue itself when there are still elements to process.
     ***/
     @TestVisible
-    private sfpegMultiSharingGroup_UTL(final dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> memberFields) {
+    private sfpegMultiSharingGroup_UTL(final dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> groupMemberFields, final Set<String> memberFields) {
         sfpegDebug_UTL.debug('START for requeuing');
         this.creationTS = System.now();
         this.deletionTS = deletionTS;
         this.config = config;
         this.groupFields = groupFields;
+        this.groupMemberFields = groupMemberFields;
         this.memberFields = memberFields;
         this.iteration = 0;
         sfpegDebug_UTL.debug('END for requeuing');
@@ -291,7 +299,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     *               this way only executes 2 upserts on this input.
     ***/
     @TestVisible
-    private sfpegMultiSharingGroup_UTL(sfpegQueueableLog__c logRecord, final Map<ID,SObject> structureMap, final Boolean doFilter, final dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> memberFields) {
+    private sfpegMultiSharingGroup_UTL(sfpegQueueableLog__c logRecord, final Map<ID,SObject> structureMap, final Boolean doFilter, final dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> groupMemberFields, final Set<String> memberFields) {
         sfpegDebug_UTL.debug('START for log record registration',logRecord);
         this.creationTS = System.now();
         this.deletionTS = deletionTS;
@@ -300,6 +308,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         this.structureMap = structureMap;
         this.config = config;
         this.groupFields = groupFields;
+        this.groupMemberFields = groupMemberFields;
         this.memberFields = memberFields;
         sfpegDebug_UTL.debug('END for log record registration');
     }
@@ -312,13 +321,14 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     *               iteration MAX_UPDATE_NBR. 
     ***/
     @TestVisible
-    private sfpegMultiSharingGroup_UTL(integer iter, dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> memberFields) {
+    private sfpegMultiSharingGroup_UTL(integer iter, dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> groupMemberFields, final Set<String> memberFields) {
         sfpegDebug_UTL.debug('START for iteration',iter);
         this.creationTS = System.now();
         this.deletionTS = deletionTS;
         this.iteration = iter;
         this.config = config;
         this.groupFields = groupFields;
+        this.groupMemberFields = groupMemberFields;
         this.memberFields = memberFields;
         sfpegDebug_UTL.debug('END for iteration');
     }
@@ -368,7 +378,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             sfpegDebug_UTL.debug('Registering prior execution');
             doRegistrations(waitTime);
             sfpegDebug_UTL.info('END / Prior execution registered');
-            return new sfpegMultiSharingGroup_UTL(this.deletionTS,this.config,this.groupFields,this.memberFields);
+            return new sfpegMultiSharingGroup_UTL(this.deletionTS,this.config,this.groupFields,this.groupMemberFields,this.memberFields);
         }
 
         // Controlling Public Groups to delete
@@ -381,7 +391,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                                   	            this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss'),
                                   	            waitTime);
             sfpegDebug_UTL.info('END / Public Groups deleted for deleted Structures');
-            return new sfpegMultiSharingGroup_UTL(this.deletionTS,this.config,this.groupFields,this.memberFields);
+            return new sfpegMultiSharingGroup_UTL(this.deletionTS,this.config,this.groupFields,this.groupMemberFields,this.memberFields);
         }
 
         // Controlling Public Groups to create
@@ -394,7 +404,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                                                 this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss'),
                                                 waitTime);
             sfpegDebug_UTL.info('END / New Public Groups created and registered on Structures');
-            return new sfpegMultiSharingGroup_UTL(this.deletionTS,this.config,this.groupFields,this.memberFields);
+            return new sfpegMultiSharingGroup_UTL(this.deletionTS,this.config,this.groupFields,this.groupMemberFields,this.memberFields);
         }
 
         // Processing Public Group Membership control
@@ -412,7 +422,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                                                                     waitTime);
             sfpegDebug_UTL.fine('CurrentLog fetched',currentLog);
             sfpegDebug_UTL.info('END  / Triggering Structure Status update');
-            return new sfpegMultiSharingGroup_UTL(currentLog,this.structureMap,true,this.deletionTS,this.config,this.groupFields,this.memberFields);
+            return new sfpegMultiSharingGroup_UTL(currentLog,this.structureMap,true,this.deletionTS,this.config,this.groupFields,this.groupMemberFields,this.memberFields);
         }
 
         // Handling empty iterations 
@@ -431,7 +441,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                                                     this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss'),
                                                     waitTime);
                 sfpegDebug_UTL.info('END / Triggering new iteration');
-                return new sfpegMultiSharingGroup_UTL(this.iteration + 1,this.deletionTS, this.config,this.groupFields,this.memberFields);
+                return new sfpegMultiSharingGroup_UTL(this.iteration + 1,this.deletionTS, this.config,this.groupFields,this.groupMemberFields,this.memberFields);
             }
         }
     }
@@ -697,8 +707,10 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         
         // Preparation
         String tmpParentSeparator = ',' + this.config.structParent + '.';
-        String updateQuery = 'SELECT Name,' + this.config.structExtID + ',' + this.config.structStatus + ',' + String.join(this.groupFields,',') + ','
-                            + this.config.structParent + '.Id,' + this.config.structParent + '.Name,' + this.config.structParent + '.' + this.config.structStatus + ','
+        String updateQuery = 'SELECT Name,' + this.config.structExtID + ',' + this.config.structStatus
+                            + ',' + String.join(this.groupFields,',')
+                            + (this.groupMemberFields.isEmpty() ? '' : ',' + String.join(this.groupMemberFields,','))
+                            + ',' + this.config.structParent + '.Id,' + this.config.structParent + '.Name,' + this.config.structParent + '.' + this.config.structStatus + ','
                             + this.config.structParent + '.' + String.join(this.groupFields,tmpParentSeparator) + ','
                             + '(SELECT Name,' + this.config.structExtID + ',' + this.config.structStatus + ',' + String.join(this.groupFields,',') + ' FROM ' + this.config.structChildren + '),'
                             + '(SELECT Name,Id,' + this.config.mbrUser + ',' + String.join(this.memberFields,',') + ' FROM ' + this.config.structMembers + ' WHERE ' + String.join(this.memberFields,' = true OR ') + ' = true)'
@@ -761,8 +773,13 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 Set<ID> downGroupSet = new Set<ID>(); 
                 iterGroupMap.put(iterHV.structDown,downGroupSet);
 
-                if (String.isNotBlank(iterHV.structMbr)) {
-                    localGroupSet.add((ID) iter.get(iterHV.structMbr));
+                if (iterHV.structMbrs != null) {
+                    for (String iterSM :iterHV.structMbrs) {
+                        ID iterSMid = (ID)  iter.get(iterSM);
+                        if (iterSMid != null) {
+                            localGroupSet.add(iterSMid);
+                        }
+                    }
                 }
             }
 

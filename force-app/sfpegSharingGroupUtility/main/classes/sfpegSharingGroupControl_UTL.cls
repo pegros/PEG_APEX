@@ -1,5 +1,5 @@
 public with sharing class sfpegSharingGroupControl_UTL {
-    
+
     //##################################################
     //################ DATA STRUCTURES #################
     //##################################################
@@ -14,8 +14,13 @@ public with sharing class sfpegSharingGroupControl_UTL {
         public String statusDate;       // API Name of the Timestamp field to track the last status review. 
         public Integer maxIDs = 100;    // Max number of Structure objects analysed at each queueable iteration.
     }
-
     
+    /***
+    * @description  private enum categorizing the 3 types of Public Groups
+    ***/ 
+    private enum GroupType {LOCAL, UP, DOWN}
+
+
     //##################################################
     //############ CONFIGURATION VARIABLES #############
     //##################################################
@@ -55,6 +60,7 @@ public with sharing class sfpegSharingGroupControl_UTL {
     * @description  Record Types of the current Structure object
     ***/
     private Map<Id,Schema.RecordTypeInfo> recordTypeMap;
+
 
     //##############################################
     //############ ITERATION VARIABLES #############
@@ -180,15 +186,16 @@ public with sharing class sfpegSharingGroupControl_UTL {
         sfpegDebug_UTL.fine('WaitTime evaluated',waitTime);
 
         if (this.sharingConfig.useRT) {
-            //this.recordTypeMap = ((SObject)Type.forName(this.sharingConfig.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
+            sfpegDebug_UTL.fine('Fetching RTs for structObject',this.sharingConfig.structObject);
+            this.recordTypeMap = ((SObject)Type.forName('Schema.' + this.sharingConfig.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
             //Change reversed because generating issue with standard Location object
-            this.recordTypeMap = Schema.getGlobalDescribe().get('Schema.' + this.sharingConfig.structObject).getDescribe().getRecordTypeInfosById();
+            //this.recordTypeMap = Schema.getGlobalDescribe().get(this.sharingConfig.structObject).getDescribe().getRecordTypeInfosById();
             sfpegDebug_UTL.debug('#RT fetched for Naming',this.recordTypeMap.size());
         }
 
         // Preparation
         String createQuery = (this.sharingConfig.useRT ? 'SELECT Name,RecordTypeId,' : 'SELECT Name,')
-                            + this.sharingConfig.structExtID + ',' + this.sharingConfig.structStatus + ',' + String.join(this.groupFields,',')
+                            + this.sharingConfig.structExtID + ',' + this.sharingConfig.structParentId + ',' + this.sharingConfig.structStatus + ',' + String.join(this.groupFields,',')
                             + ' FROM ' + this.sharingConfig.structObject
                             + ' WHERE Id > :lastRecordId ORDER BY Id LIMIT :maxIDs';              
         sfpegDebug_UTL.fine('Structure Query template built',createQuery);
@@ -214,9 +221,19 @@ public with sharing class sfpegSharingGroupControl_UTL {
             }
         }
         sfpegDebug_UTL.debug('#Group IDs identified ', groupIds.size());
+        sfpegDebug_UTL.finest('Groups IDs',groupIds);
 
         Map<ID,Group> groupMap = new Map<ID,Group>([SELECT Name, DeveloperName FROM Group WHERE Id IN :groupIDs ]);
         sfpegDebug_UTL.debug('#Groups fetched',groupMap.size());
+
+        AggregateResult[] groupMbrCounts = [SELECT count(Id) NBR, GroupId FROM GroupMember WHERE GroupId IN :groupIDs GROUP BY GroupId];
+        sfpegDebug_UTL.debug('#Group member counts fetched',groupMbrCounts.size());
+        Map<ID,Integer> groupMbrMap = new Map<ID,Integer>();
+        for (AggregateResult iter : groupMbrCounts) {
+            groupMbrMap.put((ID)iter.get('GroupId'),(Integer)iter.get('NBR'));
+        }
+        sfpegDebug_UTL.debug('#Group member counts indexed',groupMbrMap.size());
+
 
         // Structure Analysis
         List<Group> groups2update = new List<Group>();
@@ -234,9 +251,17 @@ public with sharing class sfpegSharingGroupControl_UTL {
 
                 String fieldDetails = checkGroup(iterHV.structLocal,iterNR + '_L', this.sharingConfig.structStatus, iterHV, iterS, groupMap, groups2update);
                 if (fieldDetails != null) iterDetails.add(fieldDetails);
+                fieldDetails = checkGroupMbrs(iterHV.structLocal,iterS,groupMbrMap,GroupType.LOCAL);
+                if (fieldDetails != null) iterDetails.add(fieldDetails);
+
                 fieldDetails = checkGroup(iterHV.structUp,iterNR + '_U', this.sharingConfig.structStatus, iterHV, iterS, groupMap, groups2update);
                 if (fieldDetails != null) iterDetails.add(fieldDetails);
+                fieldDetails = checkGroupMbrs(iterHV.structUp,iterS,groupMbrMap,GroupType.UP);
+                if (fieldDetails != null) iterDetails.add(fieldDetails);
+
                 fieldDetails = checkGroup(iterHV.structDown,iterNR + '_D', this.sharingConfig.structStatus, iterHV, iterS, groupMap, groups2update);
+                if (fieldDetails != null) iterDetails.add(fieldDetails);
+                fieldDetails = checkGroupMbrs(iterHV.structDown,iterS,groupMbrMap,GroupType.DOWN);
                 if (fieldDetails != null) iterDetails.add(fieldDetails);
             }
 
@@ -279,6 +304,15 @@ public with sharing class sfpegSharingGroupControl_UTL {
         }
     }
 
+    //##########################################
+    //########### UTILITY METHODS ##############
+    //##########################################
+    
+    /***
+    * @description  Private utility method controlling the existence, unicity and naming of a Public Group registered on a Structure
+    * @return       String Comment to register on the Structure (null if Status OK)
+    ***/  
+
     private String checkGroup(final String groupField, final String groupName, final String statusField, final sfpegMultiSharingGroup_UTL.SharingHierarchy sharingDesc, SObject structure, final Map<ID,Group> groupMap, List<Group> groups2update) {
         sfpegDebug_UTL.fine('START with structure', structure.Id);
         sfpegDebug_UTL.fine('for group name', groupName);
@@ -311,6 +345,66 @@ public with sharing class sfpegSharingGroupControl_UTL {
         structure.put(groupField,null);
         return 'Invalid Group ID set: ' + groupId + ' for ' + groupField;
     }
+
+
+    /***
+    * @description  Private utility method controlling the number of members of a Public Group registered on a Structure
+    * @return       String Comment to register on the Structure (null if Status OK)
+    ***/  
+    private String checkGroupMbrs(final String groupField, SObject structure, final Map<ID,Integer> groupMbrMap, final GroupType type) {
+        sfpegDebug_UTL.fine('START with structure', structure.Id);
+        sfpegDebug_UTL.fine('for group name', groupField);
+
+        String groupId = (String)structure.get(groupField);
+        if (String.isBlank(groupId)) {
+            sfpegDebug_UTL.fine('END OK / Ignoring null Group ID');
+            return null;
+        }
+        sfpegDebug_UTL.fine('Analysing group ID ',groupId);
+
+        if (groupMbrMap.containsKey(groupId)) {
+            Integer mbrCount = groupMbrMap.get(groupId);
+            sfpegDebug_UTL.fine('Group has #members',mbrCount);
+            if (type == GroupType.UP) {
+                if (structure.isSet(this.sharingConfig.structParentId) && String.isNotBlank((String)(structure.get(this.sharingConfig.structParentId)))) {
+                    sfpegDebug_UTL.fine('Structure has parent');
+                    if (mbrCount != 2) {
+                        sfpegDebug_UTL.warn('END KO / Up Group should have 2 members');
+                        structure.put(this.sharingConfig.structStatus, true);
+                        return 'UP Group ' + groupId + ' (' + groupField + ') should have 2 members';
+                    }
+                }
+                else {
+                    sfpegDebug_UTL.fine('Structure has no parent');
+                    if (mbrCount != 1) {
+                        sfpegDebug_UTL.warn('END KO / Up Group should have 1 member');
+                        structure.put(this.sharingConfig.structStatus, true);
+                        return 'UP Group ' + groupId + ' (' + groupField + ') should have 1 member';
+                    }
+                }
+            }
+        }
+        else {
+            sfpegDebug_UTL.fine('Group has no member');
+            if (type == GroupType.UP) {
+                sfpegDebug_UTL.warn('END KO / UP Group should have at least 1 member');
+                structure.put(this.sharingConfig.structStatus, true);
+                return 'UP Group ' + groupId + ' (' + groupField + ') should have min 1 member';
+            }
+            else if (type == GroupType.DOWN) {
+                sfpegDebug_UTL.warn('END KO / DOWN Group should have at least 1 member');
+                structure.put(this.sharingConfig.structStatus, true);
+                return 'DOWN Group ' + groupId + ' (' + groupField + ') should have min 1 member';
+            }
+        }
+        sfpegDebug_UTL.fine('END OK');
+        return null;
+    }
+
+    /***
+    * @description  Private utility method to generate the standard name root of Public Groups related to a Structure
+    * @return       String standard name root for Public Groups
+    ***/  
 
     private String getNameRoot(final sfpegMultiSharingGroup_UTL.SharingHierarchy sharingDesc, SObject structure) {
         sfpegDebug_UTL.fine('START for hierarchy',sharingDesc);
