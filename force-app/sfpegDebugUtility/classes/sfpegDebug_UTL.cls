@@ -38,10 +38,10 @@ public with sharing class sfpegDebug_UTL {
     *               Corresponds to the rank of the last logging level allowed (in severity
     *               decreasing order, 0 meaning no log and 7 meaning all logs down to FINEST)
     *               Max level is set to 0 by default, unless when in a test execution context
-    *               (in which case it is set to 7).
+    *               (in which case it is set to 4).
 	***/
     @testVisible
-	private static Decimal MAX_LOG_LEVEL = (sfpegDebugSetting__c.getInstance()?.MaxLevel__c == null ? (Test.isRunningTest() ? 7 : 0) : sfpegDebugSetting__c.getInstance().MaxLevel__c);
+	private static Decimal MAX_LOG_LEVEL = (sfpegDebugSetting__c.getInstance()?.MaxLevel__c == null ? (Test.isRunningTest() ? 4 : 0) : sfpegDebugSetting__c.getInstance().MaxLevel__c);
 
     //----------------------------------------------------------------------
     // Public logging methods by level
