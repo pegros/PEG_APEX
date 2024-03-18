@@ -3,8 +3,9 @@
 *               hierarchy of structure records and user structure memberships records.
 *               It behaves exactly as the sfpegSharingGroup_UTL class but enables
 *               to manage multiple public group hierarchies for a same structure
-*               hierarchy but with different set of user memebers (e.g. all members vs
-*               only managers).
+*               hierarchy but with different set of user members (e.g. all members vs
+*               only managers), as well as local (User or Group) members directly 
+*               registered on structure records.
 * @author       P-E GROS
 * @date         Jan 2024
 * @see sfpegSharingGroup_UTL
@@ -103,6 +104,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     /***
     * @description  Configuration of the Queueable execution process
     ***/
+    @testVisible
     private SharingConfiguration config;
 
     /***
@@ -149,7 +151,8 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     *               Structures to be updated (structStatus flag and
     *               structTS timestamp in configuration) in the next execution
     *               (due to MixedDML constraint).
-    ***/     
+    ***/
+    @TestVisible
     private Map<ID,SObject> structureMap = null;
 
     /***
@@ -220,7 +223,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     * @description	Standard public constructor used to launch the Queueable process.
     ***/
     public sfpegMultiSharingGroup_UTL(final SharingConfiguration config) {
-        sfpegDebug_UTL.debug('START standard init');
+        sfpegDebug_UTL.fine('START standard init');
         this.creationTS = System.now();
         this.iteration = 0;
 
@@ -231,7 +234,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             throw error;
         }
         else if ((config.hierarchies == null) || (config.hierarchies.isEmpty())) {
-            sfpegDebug_UTL.error('END KO / Missing config hierarchy');
+            sfpegDebug_UTL.error('END KO / Missing config hierarchy',config);
             Exception error = new System.NullPointerException();
             error.setMessage('Provided SharingConfiguration parameter is missing hierarchy map property');
             throw error;
@@ -248,7 +251,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 this.groupFields.add(iter.structDown);
             }
             else {
-                sfpegDebug_UTL.error('END KO / Missing group ID property in hierarchy configuration');
+                sfpegDebug_UTL.error('END KO / Missing group ID property in hierarchy configuration',iter);
                 Exception error = new System.NullPointerException();
                 error.setMessage('Provided SharingConfiguration hierarchy parameter misses group field configuration');
                 throw error;
@@ -256,18 +259,18 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             if (iter.structMbrs != null) {
                 this.groupMemberFields.addAll(iter.structMbrs);
             }
-            if (String.isNotBlank(iter.mbrActive)) {
+            else if (String.isNotBlank(iter.mbrActive)) {
                 this.memberFields.add(iter.mbrActive);
             }
             else if (iter.structMbrs == null) {
-                sfpegDebug_UTL.error('END KO / Missing membership property in hierarchy configuration');
+                sfpegDebug_UTL.error('END KO / Missing membership property in hierarchy configuration',iter);
                 Exception error = new System.NullPointerException();
                 error.setMessage('Provided SharingConfiguration hierarchy parameter misses membership field configuration');
                 throw error;
             }
         }
 
-        sfpegDebug_UTL.debug('END standard init');
+        sfpegDebug_UTL.fine('END standard init');
     }
 
     
@@ -277,7 +280,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private sfpegMultiSharingGroup_UTL(final dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> groupMemberFields, final Set<String> memberFields) {
-        sfpegDebug_UTL.debug('START for requeuing');
+        sfpegDebug_UTL.fine('START for requeuing');
         this.creationTS = System.now();
         this.deletionTS = deletionTS;
         this.config = config;
@@ -285,7 +288,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         this.groupMemberFields = groupMemberFields;
         this.memberFields = memberFields;
         this.iteration = 0;
-        sfpegDebug_UTL.debug('END for requeuing');
+        sfpegDebug_UTL.fine('END for requeuing');
     }
 
     /***
@@ -300,7 +303,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private sfpegMultiSharingGroup_UTL(sfpegQueueableLog__c logRecord, final Map<ID,SObject> structureMap, final Boolean doFilter, final dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> groupMemberFields, final Set<String> memberFields) {
-        sfpegDebug_UTL.debug('START for log record registration',logRecord);
+        sfpegDebug_UTL.fine('START for log record registration',logRecord);
         this.creationTS = System.now();
         this.deletionTS = deletionTS;
         this.logRecord = logRecord;
@@ -310,7 +313,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         this.groupFields = groupFields;
         this.groupMemberFields = groupMemberFields;
         this.memberFields = memberFields;
-        sfpegDebug_UTL.debug('END for log record registration');
+        sfpegDebug_UTL.fine('END for log record registration');
     }
 
 
@@ -322,7 +325,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private sfpegMultiSharingGroup_UTL(integer iter, dateTime deletionTS, final SharingConfiguration config, final Set<String> groupFields, final Set<String> groupMemberFields, final Set<String> memberFields) {
-        sfpegDebug_UTL.debug('START for iteration',iter);
+        sfpegDebug_UTL.fine('START for iteration',iter);
         this.creationTS = System.now();
         this.deletionTS = deletionTS;
         this.iteration = iter;
@@ -330,7 +333,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         this.groupFields = groupFields;
         this.groupMemberFields = groupMemberFields;
         this.memberFields = memberFields;
-        sfpegDebug_UTL.debug('END for iteration');
+        sfpegDebug_UTL.fine('END for iteration');
     }
 
 
@@ -358,17 +361,17 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/     
     public sfpegMultiSharingGroup_UTL execute(){
         sfpegDebug_UTL.info('START for iteration',this.iteration);
-        sfpegDebug_UTL.fine('Current configuration',this.config);
-        sfpegDebug_UTL.fine('Current hierarchies',this.config?.hierarchies);
-        sfpegDebug_UTL.fine('Current groupFields',this.groupFields);
-        sfpegDebug_UTL.fine('Current memberFields',this.memberFields);
+        sfpegDebug_UTL.finest('Current configuration',this.config);
+        sfpegDebug_UTL.finest('Current hierarchies',this.config?.hierarchies);
+        sfpegDebug_UTL.finest('Current groupFields',this.groupFields);
+        sfpegDebug_UTL.finest('Current memberFields',this.memberFields);
 
         DateTime startTS = System.Now();
         Integer waitTime = sfpegQueueable_UTL.getTimeDelta(this.creationTS,startTS);
-        sfpegDebug_UTL.fine('WaitTime evaluated',waitTime);
+        sfpegDebug_UTL.finer('WaitTime evaluated',waitTime);
 
         String lastContext = sfpegQueueable_UTL.getLastContext(this.config.className);
-        sfpegDebug_UTL.fine('LastContext fetched',lastContext);
+        sfpegDebug_UTL.finer('LastContext fetched',lastContext);
         if (String.isNotEmpty(lastContext)) {
             this.deletionTS = Datetime.valueOfGMT(lastContext);
         }
@@ -409,7 +412,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
 
         // Processing Public Group Membership control
         else if (doMembershipControl()) {
-            sfpegDebug_UTL.debug('New Public Groups created and need registration');
+            sfpegDebug_UTL.debug('Structure Groups need Memberships control');
             processMemberControl();
             sfpegDebug_UTL.debug('Structure Group Memberships controlled');
 
@@ -420,8 +423,8 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                                                                     logMessage,
                                                                     this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss'),
                                                                     waitTime);
-            sfpegDebug_UTL.fine('CurrentLog fetched',currentLog);
-            sfpegDebug_UTL.info('END  / Triggering Structure Status update');
+            sfpegDebug_UTL.finest('CurrentLog fetched',currentLog);
+            sfpegDebug_UTL.info('END  / Structure Group Memberships updated - Requeuing for Structure Status update');
             return new sfpegMultiSharingGroup_UTL(currentLog,this.structureMap,true,this.deletionTS,this.config,this.groupFields,this.groupMemberFields,this.memberFields);
         }
 
@@ -433,14 +436,14 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 sfpegQueueable_UTL.logExecution(    this.config.className,0,0,'STOP',
                                                     this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss'),
                                                     waitTime);
-                sfpegDebug_UTL.info('Last iteration reached');
+                sfpegDebug_UTL.info('END / Nothing done - Last iteration reached');
                 return null;
             }
             else {
             	sfpegQueueable_UTL.logExecution(    this.config.className,0,0,'',
                                                     this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss'),
                                                     waitTime);
-                sfpegDebug_UTL.info('END / Triggering new iteration');
+                sfpegDebug_UTL.info('END / Nothing done - Triggering new iteration');
                 return new sfpegMultiSharingGroup_UTL(this.iteration + 1,this.deletionTS, this.config,this.groupFields,this.groupMemberFields,this.memberFields);
             }
         }
@@ -455,28 +458,29 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private void doRegistrations(Integer waitTime){
-        sfpegDebug_UTL.debug('START with wait time',waitTime);
+        sfpegDebug_UTL.fine('START with wait time',waitTime);
 
         // Upserting the Log Record
         sfpegQueueable_UTL.logPriorExecution(this.logRecord);
-        sfpegDebug_UTL.fine('Log record upserted');
+        sfpegDebug_UTL.finer('Log record upserted');
 
         // Upserting the Structure (after filtering of Structure modified while waiting)
         if (this.doFilter) {
-            sfpegDebug_UTL.fine('Filtering Structure list');
+            sfpegDebug_UTL.fine('Filtering Structure list',this.structureMap);
 
             // Preparation
-            String registerQuery = 'SELECT ' + this.config.structStatus + ' FROM ' + this.config.structObject + ' WHERE Id in :structureIds AND SystemModStamp > = :timestamp';
-            sfpegDebug_UTL.fine('Structure Query template built',registerQuery);
+            String registerQuery = 'SELECT ' + this.config.structStatus + ' FROM ' + this.config.structObject + ' WHERE Id in :structureIds AND SystemModStamp > :timestamp';
+            sfpegDebug_UTL.finest('Structure Query template built',registerQuery);
 
             Map<String, Object> queryParams = new Map<String, Object>{
                 'structureIds'  => this.structureMap.keySet(),
                 'timestamp'     => this.creationTS};
-            sfpegDebug_UTL.fine('Query Params init',queryParams);
+            sfpegDebug_UTL.finest('Query Params init',queryParams);
             
             // Structure Fetch
             Map<ID,SObject> newStructureStates = new Map<ID,SObject>(Database.queryWithBinds(registerQuery,queryParams,AccessLevel.SYSTEM_MODE));
-            sfpegDebug_UTL.fine('State of upserted Structures refetched with #items ' + newStructureStates.size());
+            sfpegDebug_UTL.fine('State of upserted Structures refetched with #items ',newStructureStates.size());
+            sfpegDebug_UTL.finest('Upserted Structures status refetched ',newStructureStates);
 
             // Structure Analysis
             if (newStructureStates.size() > 0) {
@@ -484,24 +488,24 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 for (SObject iter : this.structureMap.values()) {
                     if (!newStructureStates.containsKey(iter.Id)) structures2update.add(iter);
                 }
-                sfpegDebug_UTL.finest('Structures to upsert filtered with #items',structures2update.size());
+                sfpegDebug_UTL.finest('Structures to upsert filtered');
                 upsert structures2update;
-                sfpegDebug_UTL.fine('Structure list upserted after filtering');
+                sfpegDebug_UTL.fine('Structure list upserted after filtering - #Items kept',structures2update.size());
             }
             else {
                 upsert this.structureMap.values();
-                sfpegDebug_UTL.fine('Structure list upserted with no filtering required');
+                sfpegDebug_UTL.fine('Structure list upserted with no filtering required - #Items',this.structureMap.size());
             }
         }
         else {
             upsert this.structureMap.values();
-            sfpegDebug_UTL.fine('Structure list upserted without filtering');
+            sfpegDebug_UTL.fine('Structure list upserted with no filtering - #Items',this.structureMap.size());
         }        
 
         sfpegQueueable_UTL.logExecution(    this.config.className,0,0,null,
                                             this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss'),
                                             waitTime);
-        sfpegDebug_UTL.debug('END after current execution registration');
+        sfpegDebug_UTL.fine('END');
         return;
     }
 
@@ -523,32 +527,32 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private Boolean processGroups2Delete(){
-        sfpegDebug_UTL.debug('START');
+        sfpegDebug_UTL.fine('START');
 
         // Preparation
         String deleteQuery = 'SELECT SystemModStamp,' + this.config.structExtID + ',' + String.join(this.groupFields,',') + ' FROM ' + this.config.structObject + ' WHERE IsDeleted = true'
                             + (this.deletionTS == null ? '' : ' and systemModStamp > :timeStamp') + ' ORDER BY SystemModStamp asc LIMIT :maxDelete ALL ROWS';                    
-        sfpegDebug_UTL.fine('Structure Query template built',deleteQuery);
+        sfpegDebug_UTL.finest('Structure Query template built',deleteQuery);
 
         Map<String, Object> queryParams = new Map<String, Object>{
             'maxDelete'     => this.config.maxDelete,
             'timestamp'     => this.deletionTS};
-        sfpegDebug_UTL.fine('Query Params init',queryParams);
+        sfpegDebug_UTL.finest('Query Params init',queryParams);
 
         // Structure fetch
         this.structureMap = new Map<ID,SObject>(Database.queryWithBinds(deleteQuery,queryParams,AccessLevel.SYSTEM_MODE));
-        sfpegDebug_UTL.fine('#Deleted Structures fetched',this.structureMap.size());
+        sfpegDebug_UTL.finer('#Deleted Structures fetched',this.structureMap.size());
 
         if (this.structureMap.size() == 0) {
             this.deletionTS = this.creationTS;
-            sfpegDebug_UTL.debug('END / No Public Group to delete for any Structure');
+            sfpegDebug_UTL.fine('END / No Public Group to delete for any Structure');
             return false;
         }
 
         // Structure analysis
         Set<ID> grpIDs2delete = new Set<ID>();
         for (SObject iter : this.structureMap.values()) {
-            sfpegDebug_UTL.fine('Removing Groups for Structure',iter.get(this.config.structExtID));
+            sfpegDebug_UTL.finest('Removing Groups for Structure',iter.get(this.config.structExtID));
             for (String iterF : this.groupFields) {
                 ID iterV = (ID)iter.get(iterF);
                 if (iterV != null) {
@@ -557,13 +561,13 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             }
             this.deletionTS = (DateTime)iter.get('SystemModStamp'); // to track last one
         }
-        sfpegDebug_UTL.debug('#Groups to delete identified',grpIDs2delete.size());
+        sfpegDebug_UTL.finer('#Groups to delete identified',grpIDs2delete.size());
 
         // Logic Execution
         Database.DeleteResult[] deleteResults = database.delete(new List<ID>(grpIDs2delete),false);        
         // @TODO : Analyse results and register errors
 
-        sfpegDebug_UTL.debug('END / Public Groups deleted for deleted Structures');
+        sfpegDebug_UTL.fine('END / Public Groups deleted for deleted Structures');
         return true;
     }
 
@@ -581,31 +585,31 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private Boolean processMissingGroups(){
-        sfpegDebug_UTL.debug('processMissingGroups: START');
+        sfpegDebug_UTL.fine('processMissingGroups: START');
 
         // Preparation
         String createQuery = (this.config.useRT ? 'SELECT Name,RecordTypeId,' : 'SELECT Name,') + this.config.structExtID + ',' + String.join(this.groupFields,',')
                             + ' FROM ' + this.config.structObject
                             + ' WHERE (' + String.join(this.groupFields,' = null OR ') + ' = null) AND ' + this.config.structStatus + ' = true LIMIT :maxCreate';              
-        sfpegDebug_UTL.fine('Structure Query template built',createQuery);
+        sfpegDebug_UTL.finest('Structure Query template built',createQuery);
 
         Map<String, Object> queryParams = new Map<String, Object>{
             'maxCreate'     => this.config.maxCreate};
-        sfpegDebug_UTL.fine('Query Params init',queryParams);
+        sfpegDebug_UTL.finest('Query Params init',queryParams);
 
         // Structure Fetch
         this.structureMap = new Map<ID,SObject>(Database.queryWithBinds(createQuery,queryParams,AccessLevel.SYSTEM_MODE));
-        sfpegDebug_UTL.fine('#Structures with missing Groups fetched',this.structureMap.size());
+        sfpegDebug_UTL.finer('#Structures with missing Groups fetched',this.structureMap.size());
 
         if (this.structureMap.size() == 0) {
-            sfpegDebug_UTL.debug('END / Public Group OK declared for all Structures');
+            sfpegDebug_UTL.fine('END / Public Group OK declared for all Structures');
             return false;
         }
 
         // Structure Analysis
         Map<Id,Schema.RecordTypeInfo> recordTypeMap;
         if (this.config.useRT) {
-            sfpegDebug_UTL.debug('Group Naming with RT');
+            sfpegDebug_UTL.finest('Group Naming with RT');
             //recordTypeMap = Schema.getGlobalDescribe().get(this.config.structObject).getDescribe().getRecordTypeInfosById();
             //Change reversed because generating issue with standard Location object
             recordTypeMap = ((SObject)Type.forName('Schema.' + this.config.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
@@ -614,7 +618,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         Map<String,Map<String,Group>> groupMap = new Map<String,Map<String,Group>>();
         List<Group> groups2add = new List<Group>();
         for (SObject iter : this.structureMap.values()) {
-            sfpegDebug_UTL.fine('Adding Groups for Structure', iter);
+            sfpegDebug_UTL.finest('Adding Groups for Structure', iter);
             String iterExtId = (String) iter.get(this.config.structExtID);
             sfpegDebug_UTL.finest('Structure External ID fetched',iterExtId);
 
@@ -637,7 +641,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
 
                 if (iter.get(iterH.structLocal) == null) {
                     Group newGrp = new Group(Name = nameRoot + '_L');
-                    sfpegDebug_UTL.fine('Adding Local Group', newGrp);
+                    sfpegDebug_UTL.finest('Adding Local Group', newGrp);
                     iterGroupMap.put(iterH.structLocal,newGrp);
                     groups2add.add(newGrp);
                 }
@@ -646,7 +650,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 }
                 if (iter.get(iterH.structUp) == null) {
                     Group newGrp = new Group(Name = nameRoot + '_U');
-                    sfpegDebug_UTL.fine('Adding Upward Group', newGrp);
+                    sfpegDebug_UTL.finest('Adding Upward Group', newGrp);
                     iterGroupMap.put(iterH.structUp,newGrp);
                     groups2add.add(newGrp);
                 }
@@ -655,7 +659,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 }
                 if (iter.get(iterH.structDown) == null) {
                     Group newGrp = new Group(Name = nameRoot + '_D');
-                    sfpegDebug_UTL.fine('Adding Downward Group', newGrp);
+                    sfpegDebug_UTL.finest('Adding Downward Group', newGrp);
                     iterGroupMap.put(iterH.structDown,newGrp);
                     groups2add.add(newGrp);
                 }
@@ -664,28 +668,28 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                 }
             }
         }
-        sfpegDebug_UTL.debug('#Groups to add',groups2add.size());
-        sfpegDebug_UTL.debug('#Structure to update',groupMap.size());
+        sfpegDebug_UTL.finer('#Groups to add',groups2add.size());
+        sfpegDebug_UTL.finer('#Structures to update',groupMap.size());
 
         // Logic Execution
         insert groups2add;
-        sfpegDebug_UTL.debug('Groups inserted');
+        sfpegDebug_UTL.finer('Groups inserted');
 
         for (SObject iter : this.structureMap.values()) {
             String iterExtId = (String)iter.get(this.config.structExtID);
-            sfpegDebug_UTL.fine('Registering group IDs on Structure',iterExtId);
+            sfpegDebug_UTL.finest('Registering group IDs on Structure',iterExtId);
 
             Map<String,Group> iterGroups = groupMap.get(iterExtId);
             for (String iterF : iterGroups.keySet()) {
-                sfpegDebug_UTL.fine('Setting Group ID field',iterF);
-                sfpegDebug_UTL.fine('with value',iterGroups.get(iterF).Id);
+                sfpegDebug_UTL.finest('Setting Group ID field',iterF);
+                sfpegDebug_UTL.finest('with value',iterGroups.get(iterF).Id);
                 iter.put(iterF,iterGroups.get(iterF).Id);
             }
         }
-        sfpegDebug_UTL.debug('All Public Group IDs set on Structures');
+        sfpegDebug_UTL.finer('All Public Group IDs set on Structures');
         upsert this.structureMap.values();
 
-        sfpegDebug_UTL.debug('END / Public Group IDs registered on Structures');
+        sfpegDebug_UTL.fine('END / Public Group IDs registered on #Structures',this.structureMap.size());
         return true;
     }
 
@@ -703,7 +707,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private Boolean doMembershipControl() {
-        sfpegDebug_UTL.debug('START');
+        sfpegDebug_UTL.fine('START');
         
         // Preparation
         String tmpParentSeparator = ',' + this.config.structParent + '.';
@@ -715,27 +719,27 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                             + '(SELECT Name,' + this.config.structExtID + ',' + this.config.structStatus + ',' + String.join(this.groupFields,',') + ' FROM ' + this.config.structChildren + '),'
                             + '(SELECT Name,Id,' + this.config.mbrUser + ',' + String.join(this.memberFields,',') + ' FROM ' + this.config.structMembers + ' WHERE ' + String.join(this.memberFields,' = true OR ') + ' = true)'
                             + ' FROM ' + this.config.structObject + ' WHERE ' + this.config.structStatus + ' = true' + ' ORDER BY SystemModstamp asc LIMIT :maxUpdate';
-        sfpegDebug_UTL.fine('Structure Query template built',updateQuery);
+        sfpegDebug_UTL.finest('Structure Query template built',updateQuery);
 
         Map<String, Object> queryParams = new Map<String, Object>{
             'maxUpdate'     => this.config.maxUpdate};
-        sfpegDebug_UTL.fine('Query Params init',queryParams);
+        sfpegDebug_UTL.finest('Query Params init',queryParams);
 
         // Fetching Structures to process
         this.structureList = Database.queryWithBinds(updateQuery,queryParams,AccessLevel.SYSTEM_MODE);
-        sfpegDebug_UTL.debug('#Structures fetched',structureList.size());
+        sfpegDebug_UTL.fine('#Structures fetched',structureList.size());
 
         if (this.structureList.size() == 0) {
-            sfpegDebug_UTL.debug('END / Nothing to process');
+            sfpegDebug_UTL.fine('END / Nothing to process');
             return false;
         }
 
         // Structure Analysis
-        sfpegDebug_UTL.debug('Processing Structures / Fetching Groups');
+        sfpegDebug_UTL.finest('Processing Structures / Fetching Groups');
         Set<ID> groupIds = new Set<ID>();   // Set of all Groups mentioned (at parent, main, children levels)
 
         For (SObject iter : structureList) {
-            sfpegDebug_UTL.fine('fetching Groups for Structure ',iter.get('Name'));
+            sfpegDebug_UTL.finest('fetching Groups for Structure ',iter.get('Name'));
             sfpegDebug_UTL.finest('Structure data ',iter);
             sfpegDebug_UTL.finest('Structure parent data ',iter.getSobject(this.config.structParent));
             sfpegDebug_UTL.finest('Structure member data ',iter.getSobjects(this.config.structMembers));
@@ -796,7 +800,10 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                     for (String iterH : this.config.hierarchies.keySet()) {
                         SharingHierarchy iterHV = this.config.hierarchies.get(iterH);
 
-                        if (String.isNotBlank((String)iterMember.get(this.config.mbrUser))) {
+                        if (String.isBlank(iterHV.mbrActive)) {
+                            sfpegDebug_UTL.finest('No User Member for hierarchy',iterH);
+                        }
+                        else if (String.isNotBlank((String)iterMember.get(this.config.mbrUser))) {
                             if ((Boolean)iterMember.get(iterHV.mbrActive)) {
                                 sfpegDebug_UTL.finest('Registering Member User for hierarchy',iterH);
                                 (iterGroupMap.get(iterHV.structLocal)).add((String)iterMember.get(this.config.mbrUser));
@@ -837,13 +844,13 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             }
         }
         sfpegDebug_UTL.fine('Public Groups extracted with #IDs', groupIds.size());
-        sfpegDebug_UTL.fine('Public Groups extracted for #Structures', this.structureGroupSetMap.size());
+        sfpegDebug_UTL.finer('Public Groups extracted for #Structures', this.structureGroupSetMap.size());
 
         this.groupMap = new Map<Id,Group>([
             SELECT Name, (SELECT UserOrGroupId FROM GroupMembers)
             FROM Group
             WHERE Id in :groupIds]);
-        sfpegDebug_UTL.fine('#Public Groups descriptions fetched',this.groupMap.size());
+        sfpegDebug_UTL.finer('#Public Groups descriptions fetched',this.groupMap.size());
 
 
         // Executing Logic
@@ -858,7 +865,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
         }
         sfpegDebug_UTL.fine('Public Groups memberships fetched for #IDs',this.membershipMap.size());
 
-        sfpegDebug_UTL.debug('END');
+        sfpegDebug_UTL.fine('END');
         return true;
     }
 
@@ -874,14 +881,14 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private void processMemberControl() {
-        sfpegDebug_UTL.debug('START');
+        sfpegDebug_UTL.fine('START');
 
         // Executing the controls on all fetched Structures.
         this.structureMap = new Map<ID,SObject>();
         Schema.sObjectType structureObject = this.structureList[0].getSObjectType();
-        sfpegDebug_UTL.debug('Structure SObject Type fetched', structureObject);
+        sfpegDebug_UTL.finest('Structure SObject Type fetched', structureObject);
         for (SObject iter : this.structureList) {
-            sfpegDebug_UTL.fine('Processing Structure',iter);
+            sfpegDebug_UTL.finest('Processing Structure',iter);
 
             for (SharingHierarchy iterHV : this.config.hierarchies.values()) {
                 sfpegDebug_UTL.finest('Processing Hierarchy',iterHV);
@@ -906,16 +913,21 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             iterUpdate.put(this.config.structTS, System.now());
             this.structureMap.put((ID)iter.get('Id'), iterUpdate);
         }
-        sfpegDebug_UTL.debug('All Structures processed');
+        sfpegDebug_UTL.fine('All #Structures processed',this.structureList.size());
 
         // Updating the database (Setup GroupMember Object)
         Database.SaveResult[] insertResults = database.insert(this.gm2add.values(),false);
-        sfpegDebug_UTL.debug('#New Group Memberships added',this.gm2add.size());
+        sfpegDebug_UTL.fine('#New Group Memberships added',this.gm2add.size());
+        Integer insertErrors = 0;
+        for(Database.SaveResult iter : insertResults) {if (!iter.isSuccess()) insertErrors +=1;}
+        sfpegDebug_UTL.fine('#Insertion errors returned',insertErrors);
         Database.DeleteResult[] deleteResults = database.delete(new List<ID>(this.gm2remove),false);        
-        sfpegDebug_UTL.debug('#Old Group Memberships removed',this.gm2remove.size());
-        // @TODO : analyse results
+        sfpegDebug_UTL.fine('#Old Group Memberships removed',this.gm2remove.size());
+        Integer deleteErrors = 0;
+        for(Database.DeleteResult iter : deleteResults) {if (!iter.isSuccess()) deleteErrors +=1;}
+        sfpegDebug_UTL.fine('#Deletion errors returned',deleteErrors);
 
-        sfpegDebug_UTL.debug('END');
+        sfpegDebug_UTL.fine('END');
     }
 
     /***
@@ -929,7 +941,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private void checkLGroupMembers(SObject structure, SharingHierarchy hierarchy) {
-        sfpegDebug_UTL.fine('START for structure',structure);
+        sfpegDebug_UTL.finer('START for structure',structure);
         sfpegDebug_UTL.finest('and hierarchy',hierarchy);
 
         Group lGroupDesc = this.groupMap.get((String)structure.get(hierarchy.structLocal));
@@ -976,7 +988,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             }
         }
 
-        sfpegDebug_UTL.fine('END');
+        sfpegDebug_UTL.finer('END');
     }
 
     /***
@@ -990,7 +1002,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private void checkLGroupMemberships(final SObject structure, final SharingHierarchy hierarchy) {
-        sfpegDebug_UTL.fine('START for structure',structure);
+        sfpegDebug_UTL.finer('START for structure',structure);
         sfpegDebug_UTL.finest('and hierarchy',hierarchy);
 
         List<GroupMember> lGroupMbs = this.membershipMap.get((String)structure.get(hierarchy.structLocal));
@@ -1031,7 +1043,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                                           	UserOrGroupId = (ID)structure.get(hierarchy.structLocal)));
         }
 
-        sfpegDebug_UTL.fine('END');
+        sfpegDebug_UTL.finer('END');
     }
 
     /***
@@ -1047,7 +1059,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private void checkUGroupMembers(final SObject structure, final SharingHierarchy hierarchy) {
-        sfpegDebug_UTL.fine('START for structure', structure);
+        sfpegDebug_UTL.finer('START for structure', structure);
         sfpegDebug_UTL.finest('and hierarchy',hierarchy);
 
         Group mGroupDesc = this.groupMap.get((String)structure.get(hierarchy.structUp));
@@ -1093,7 +1105,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             }
         }
 
-        sfpegDebug_UTL.fine('END');
+        sfpegDebug_UTL.finer('END');
     }
 
     /***
@@ -1107,7 +1119,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/    
     @TestVisible
     private void checkUGroupMemberships(final SObject structure, final SharingHierarchy hierarchy) {
-        sfpegDebug_UTL.fine('START for structure',structure);
+        sfpegDebug_UTL.finer('START for structure',structure);
         sfpegDebug_UTL.finest('and hierarchy',hierarchy);
 
         List<GroupMember> mGroupMbs = this.membershipMap.get((ID)structure.get(hierarchy.structUp));
@@ -1143,7 +1155,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             }
         }
 
-        sfpegDebug_UTL.fine('END');
+        sfpegDebug_UTL.finer('END');
     }
 
     /***
@@ -1159,7 +1171,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/
     @TestVisible
     private void checkDGroupMembers(final SObject structure, final SharingHierarchy hierarchy) {
-        sfpegDebug_UTL.fine('START for structure', structure);
+        sfpegDebug_UTL.finer('START for structure', structure);
         sfpegDebug_UTL.finest('and hierarchy',hierarchy);
 
         Group dGroupDesc = groupMap.get((ID)structure.get(hierarchy.structDown));
@@ -1209,7 +1221,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
                                           		UserOrGroupId = iterId));
             }
         }
-        sfpegDebug_UTL.fine('END');
+        sfpegDebug_UTL.finer('END');
     }
 
     /***
@@ -1223,7 +1235,7 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
     ***/    
     @TestVisible
     private void checkDGroupMemberships(final SObject structure, final SharingHierarchy hierarchy) {
-        sfpegDebug_UTL.fine('START for structure', structure);
+        sfpegDebug_UTL.finer('START for structure', structure);
         sfpegDebug_UTL.finest('and hierarchy',hierarchy);
 
         List<GroupMember> dGroupMbs = this.membershipMap.get((ID)structure.get(hierarchy.structDown));
@@ -1255,6 +1267,6 @@ public with sharing class sfpegMultiSharingGroup_UTL  {
             }
         }
 
-        sfpegDebug_UTL.fine('END');
+        sfpegDebug_UTL.finer('END');
     }
 }
