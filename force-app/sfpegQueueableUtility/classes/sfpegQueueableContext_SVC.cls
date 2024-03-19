@@ -153,12 +153,12 @@ public with sharing class sfpegQueueableContext_SVC  {
 
     /***
 	* @description  Public method invoked at the end of a Queueable process execution
-    *               to log data about the process.
+    *               to log data about the process with a specific operation name
     ***/
-    public void logExecution(final string contextData) {
-        sfpegDebug_UTL.fine('START');
+    public void logExecution(final string operationName, final string contextData) {
+        sfpegDebug_UTL.fine('START with operation',operationName);
         
-        String logMessage = this.processName + ' #' + this.iteration + ': OK for ' +  this.recordsOK.size();
+        String logMessage = this.processName + (String.isNotBlank(operationName) ? ' - ' + operationName: '') + ' #' + this.iteration + ': OK for ' +  this.recordsOK.size();
         Integer koNbr = this.recordsKO.size();
         logMessage += ' and KO for ' + koNbr + ' records';
 
@@ -173,6 +173,16 @@ public with sharing class sfpegQueueableContext_SVC  {
 
         sfpegQueueable_UTL.logExecution(    this.processName,this.recordsOK.size(),this.recordsKO.size(),
                                             logMessage,contextData,this.waitTime);
+        sfpegDebug_UTL.fine('END');
+    }
+
+    /***
+	* @description  Public method invoked at the end of a Queueable process execution
+    *               to log data about the process.
+    ***/
+    public void logExecution(final string contextData) {
+        sfpegDebug_UTL.fine('START');
+        logExecution(null,contextData);
         sfpegDebug_UTL.fine('END');
     }
 
