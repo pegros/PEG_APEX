@@ -71,8 +71,11 @@ public with sharing class sfpegQueueableContext_TST {
         sfpegDebug_UTL.debug('Records insered',rcdInserts);
         Assert.areEqual(2,testContext.size(),'Context size should be 2 after 2 inserts');
 
-        testContext.logExecution('TEST Context');
+        testContext.logExecution('TEST Context',null);
         sfpegDebug_UTL.debug('Execution registered');
+
+        testContext.logExecutionEnd(null);
+        sfpegDebug_UTL.debug('End registered');
 
         testContext.logExecutionAbort('TEST Abort');
         sfpegDebug_UTL.debug('Abortion registered');

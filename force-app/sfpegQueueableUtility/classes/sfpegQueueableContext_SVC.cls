@@ -35,9 +35,9 @@
 @SuppressWarnings('PMD.ClassNamingConventions')
 public with sharing class sfpegQueueableContext_SVC  {
 
-    //############################################
-    //########## INSTANCE VARIABLES ##############
-    //############################################
+    //################################################################################################
+    // STATIC VARIABLES
+    //################################################################################################
 
     /***
     * @description  Max. number of Affectation IDs for detailed logging of failures
@@ -47,14 +47,20 @@ public with sharing class sfpegQueueableContext_SVC  {
     public static Integer MAX_LOG_IDS = 5;
 
 
-    //############################################
-    //########## INSTANCE VARIABLES ##############
-    //############################################
+    //################################################################################################
+    // INSTANCE VARIABLES
+    //################################################################################################
     
     /***
     * @description  Name of the process for queueable logging purposes
     ***/
     private String processName;
+
+    /***
+    * @description  Name of the operation for queueable logging purposes.
+    *               It is kept public to let the queueable process update it while processing.
+    ***/
+    public String operationName;
     
     /***
     * @description  This variable registers the iteration number of a queueable process,
@@ -81,9 +87,9 @@ public with sharing class sfpegQueueableContext_SVC  {
     private Set<String> recordsKO = new Set<String>();
     
 
-    //############################################
-    //############# INITIALIZATION ###############
-    //############################################
+    //################################################################################################
+    // INITIALIZATION
+    //################################################################################################
     
     /***
     * @description  Public constructor used when starting the Queueable process.
@@ -102,9 +108,9 @@ public with sharing class sfpegQueueableContext_SVC  {
     }
 
 
-    //############################################
-    //############## PUBLIC METHODS ##############
-    //############################################
+    //################################################################################################
+    // PUBLIC METHODS
+    //################################################################################################
 
     /***
 	* @description  Public method providing the number of records processed
@@ -115,8 +121,17 @@ public with sharing class sfpegQueueableContext_SVC  {
 	}
 
     /***
+	* @description  Public method registering a set of items as OK in the Context
+    *               and removing them from the KO ones if needed.
+    ***/
+	public void registerOK(final Set<String> items) {
+        this.recordsOK.addAll(items);
+        this.recordsKO.removeAll(items);
+    }
+
+    /***
 	* @description  Public method registering an item as OK in the Context
-    *               and removing from the KO ones if needed.
+    *               and removing it from the KO ones if needed.
     ***/
 	public void registerOK(final String item) {
         this.recordsOK.add(item);
@@ -124,8 +139,17 @@ public with sharing class sfpegQueueableContext_SVC  {
     }
 
     /***
+	* @description  Public method registering a set of items as KO in the Context
+    *               and removing them from the OK ones if needed.
+    ***/
+	public void registerKO(final Set<String> items) {
+        this.recordsOK.removeAll(items);
+        this.recordsKO.addAll(items);
+    }
+
+    /***
 	* @description  Public method registering an item as KO in the Context
-    *               and removing from the OK ones if needed.
+    *               and removing it from the OK ones if needed.
     ***/
 	public void registerKO(final String item) {
         this.recordsOK.remove(item);
@@ -158,20 +182,25 @@ public with sharing class sfpegQueueableContext_SVC  {
     public void logExecution(final string operationName, final string contextData) {
         sfpegDebug_UTL.fine('START with operation',operationName);
         
-        String logMessage = this.processName + (String.isNotBlank(operationName) ? ' - ' + operationName: '') + ' #' + this.iteration + ': OK for ' +  this.recordsOK.size();
+        String logMessage = (String.isNotBlank(operationName) ? operationName : (String.isNotBlank(this.operationName) ? this.operationName : this.processName))
+                            + ' #' + this.iteration + ': OK for ' +  this.recordsOK.size();
         Integer koNbr = this.recordsKO.size();
         logMessage += ' and KO for ' + koNbr + ' records';
 
         if (koNbr > 0) {
+            sfpegDebug_UTL.finest('Registering Failed record IDs',koNbr);
+            sfpegDebug_UTL.finest('Source Failed record IDs',this.recordsKO);
             List<String> idList = new List<String>(this.recordsKO);
+            sfpegDebug_UTL.finest('Failed record IDs',idList);
             while (idList.size() > MAX_LOG_IDS) {
                 idList.remove(MAX_LOG_IDS);
             }
+            sfpegDebug_UTL.finest('Failed record IDs filtered',idList);
             logMessage += '\nFailed for IDs ' + String.join(idList, ',') + (koNbr > MAX_LOG_IDS ? '...' : '');
         }
         sfpegDebug_UTL.finest('logMessage init',logMessage);
 
-        sfpegQueueable_UTL.logExecution(    this.processName,this.recordsOK.size(),this.recordsKO.size(),
+        sfpegQueueable_UTL.logExecution(    this.processName,this.recordsOK.size() + this.recordsKO.size(),this.recordsKO.size(),
                                             logMessage,contextData,this.waitTime);
         sfpegDebug_UTL.fine('END');
     }
@@ -180,20 +209,31 @@ public with sharing class sfpegQueueableContext_SVC  {
 	* @description  Public method invoked at the end of a Queueable process execution
     *               to log data about the process.
     ***/
-    public void logExecution(final string contextData) {
-        sfpegDebug_UTL.fine('START');
-        logExecution(null,contextData);
+    public void logExecutionEnd(final string contextData) {
+        sfpegDebug_UTL.fine('START at iteration',this.iteration);
+        sfpegQueueable_UTL.logExecution(    this.processName,0,0,
+                                            'END at #' + this.iteration,
+                                            contextData,this.waitTime);
+        //logExecution(null,contextData);
         sfpegDebug_UTL.fine('END');
     }
 
     /***
 	* @description  Public method invoked at the end of a Queueable process execution
-    *               to log an aborted execution about the process.
+    *               to log an aborted execution of the process.
     ***/
-    public void logExecutionAbort(final string message) {
+    public void logExecutionAbort(final string message, final string contextData) {
         sfpegDebug_UTL.fine('START',message);
         sfpegQueueable_UTL.logExecution(    this.processName,0,0,
-                                            message,null,this.waitTime);
+                                            message,contextData,this.waitTime);
         sfpegDebug_UTL.fine('END');
+    }
+
+    /***
+	* @description  Public method invoked at the end of a Queueable process execution
+    *               to log an aborted execution of the process (for compatibility purposes)
+    ***/
+    public void logExecutionAbort(final string message) {
+        logExecutionAbort(message,null);
     }
 }
