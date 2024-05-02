@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>areGroupsOK__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Flag to track result of Group Control</description>
+    <externalId>false</externalId>
+    <label>areGroupsOK</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

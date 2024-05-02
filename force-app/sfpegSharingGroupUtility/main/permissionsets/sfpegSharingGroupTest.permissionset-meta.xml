@@ -28,6 +28,11 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>sfpegTestStructure__c.areGroupsOK__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>sfpegTestStructure__c.downGroupId__c</field>
         <readable>true</readable>
     </fieldPermissions>
@@ -38,7 +43,17 @@
     </fieldPermissions>
     <fieldPermissions>
         <editable>true</editable>
+        <field>sfpegTestStructure__c.koGroupDetails__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
         <field>sfpegTestStructure__c.lastGroupEvalTS__c</field>
+        <readable>true</readable>
+    </fieldPermissions>
+    <fieldPermissions>
+        <editable>true</editable>
+        <field>sfpegTestStructure__c.lastGroupControlTS__c</field>
         <readable>true</readable>
     </fieldPermissions>
     <fieldPermissions>

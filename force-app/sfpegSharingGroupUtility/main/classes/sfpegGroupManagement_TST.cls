@@ -478,10 +478,12 @@ public class sfpegGroupManagement_TST {
     *               records previously inserted/updated.
     **/
     public static Map<ID,sfpegTestStructure__c> loadStructureRecords(final Set<ID> recordIDs) {
+        sfpegDebug_UTL.finer('Reloading #structures',recordIDs.size());
         return new Map<ID,sfpegTestStructure__c>(
             [   SELECT  Name, UniqueID__c, Parent__c,
                         localGroupId__c,upGroupId__c, downGroupId__c,otherLocalGroupId__c,
                         doGroupEval__c, lastGroupEvalTS__c, lastGroupEvalMsg__c,
+                        areGroupsOK__c, lastGroupControlTS__c, koGroupDetails__c,
                         SystemModStamp
                 FROM sfpegTestStructure__c
                 WHERE Id IN :recordIDs]);
@@ -492,6 +494,7 @@ public class sfpegGroupManagement_TST {
     *               records previously inserted/updated.
     **/
     public static Map<ID,sfpegTestMember__c> loadMemberRecords(final Set<ID> recordIDs) {
+        sfpegDebug_UTL.finer('Reloading #members',recordIDs.size());
         return new Map<ID,sfpegTestMember__c>(
             [   SELECT  Name, status__c,
                         user__c,structure__c,

@@ -722,6 +722,7 @@ public with sharing class sfpegGroupManagement_UTL  {
         return (this.deletionTS == null ? '' : this.deletionTS.formatGmt('yyyy-MM-dd HH:mm:ss') + (String.isBlank(this.lastRecordId) ? '' : '###' + this.lastRecordId));
     }
 
+
     //################################################################################################
     // GROUP MANAGEMENT LOGIC
     //################################################################################################
@@ -859,7 +860,7 @@ public with sharing class sfpegGroupManagement_UTL  {
             Map<String,Group> iterGroupMap = new Map<String,Group>();
             groupMap.put(iterKey,iterGroupMap);
             for (GroupConfiguration iterConfig : this.globalConfig.groupConfigs.values()) {
-                sfpegDebug_UTL.finest('Processing config', iterConfig);
+                sfpegDebug_UTL.finest('Processing config', iterConfig.suffix);
 
                 String nameRoot = (String.isNotBlank(iterConfig.prefix) ? iterConfig.prefix + '_' : '');
                 if ((this.globalConfig.useRT) && (String.isNotBlank((String)iter.get('RecordTypeId')))) {
@@ -1031,7 +1032,6 @@ public with sharing class sfpegGroupManagement_UTL  {
         sfpegDebug_UTL.fine('END / #Structures to process',this.structureMap.size());
         return true;
     }
-
 
     /***
     * @description  Membership data fetch and initialization for Group control
