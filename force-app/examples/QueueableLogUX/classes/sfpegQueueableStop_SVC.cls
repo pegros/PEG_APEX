@@ -1,4 +1,3 @@
-
 /***
 * @description  Simple implementation of the generic sfpegAction_SVC class 
 *               (see PEG_LIST package) to stop the execution of all running
@@ -37,13 +36,13 @@
 public with sharing class sfpegQueueableStop_SVC extends sfpegAction_SVC  {
 
     /***
-	* @description  Standard override of the sfpegAction_SVC execute() method
+  * @description  Standard override of the sfpegAction_SVC execute() method
     *               to execute a checkLaunch() via the sfpegQueueableLaunch_SVC
     *               of the Apex singleton Apex class name provided via the 
     *               CLASS input parameter (method parameter is ignored).
     ***/
-	public override Object execute(final Object input, final String method) {
-		sfpegDebug_UTL.info('START with input ',input);
+    public override Object execute(final Object input, final String method) {
+        sfpegDebug_UTL.info('START with input ',input);
         Map<Object,Object> inputMap = (Map<Object,Object>) input;
 
         String queueableName = (String) inputMap?.get('CLASS');
@@ -61,24 +60,38 @@ public with sharing class sfpegQueueableStop_SVC extends sfpegAction_SVC  {
         }
         sfpegDebug_UTL.debug('maxJobs init/extracted ', maxJobs);
 
-        List<AsyncApexJob> apexJobs = [	SELECT Id, Status, JobType FROM AsyncApexJob 
-                                        WHERE JobType = 'Queueable'
-                                        AND Status IN ('Queued','Preparing','Processing')
-                                        AND ApexClass.Name = :queueableName
-                                        ORDER BY Id desc
-                                        LIMIT :maxJobs];
-        sfpegDebug_UTL.fine('apexJobs retrieved',apexJobs);
-        for (AsyncApexJob iter : apexJobs) {
-            sfpegDebug_UTL.fine('Aborting job',iter);
-            try {
-                System.abortJob(iter.id);
+        Boolean doContinue = true;
+        Integer totalJobs = 0;
+        while (doContinue) {
+            List<AsyncApexJob> apexJobs = [ SELECT Id, Status, JobType
+                                            FROM AsyncApexJob 
+                                            WHERE JobType = 'Queueable'
+                                            AND Status IN ('Queued','Preparing','Processing')
+                                            AND ApexClass.Name = :queueableName
+                                            ORDER BY Id asc
+                                            LIMIT :maxJobs];
+            sfpegDebug_UTL.fine('#apexJobs retrieved',apexJobs.size());
+
+            if (apexJobs.size() == 0) {
+                sfpegDebug_UTL.fine('No job to cancel');
+                doContinue = false;
             }
-            catch (Exception e) {
-                sfpegDebug_UTL.warn('Job abortion failed',e);
+            else {
+                sfpegDebug_UTL.fine('Cancelling jobs');
+                for (AsyncApexJob iter : apexJobs) {
+                    sfpegDebug_UTL.fine('Aborting job',iter);
+                    try {
+                        System.abortJob(iter.id);
+                    }
+                    catch (Exception e) {
+                        sfpegDebug_UTL.warn('Job abortion failed',e);
+                    }
+                }
+                totalJobs += apexJobs.size();
             }
         }
 
-		sfpegDebug_UTL.info('END # #Jobs stopped',apexJobs.size());
-		return true;
-	}
+        sfpegDebug_UTL.info('END #Jobs stopped',totalJobs);
+        return true;
+    }
 }

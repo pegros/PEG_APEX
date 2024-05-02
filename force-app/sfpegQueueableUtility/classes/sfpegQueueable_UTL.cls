@@ -69,6 +69,7 @@ public with sharing class sfpegQueueable_UTL {
 				WHERE JobType = 'Queueable'
 					AND Status IN ('Queued','Preparing','Processing')
 					AND ApexClass.Name = :qClassName
+                    FOR UPDATE
 				LIMIT 1];
         sfpegDebug_UTL.fine('apexJobs retrieved',apexJobs);
         

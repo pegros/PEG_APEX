@@ -30,9 +30,13 @@
 { &quot;label&quot;: &quot;Ratio Empty&quot;, &quot;fieldName&quot;: &quot;JobEmptyRatio__c&quot;, &quot;type&quot;:&quot;number&quot;,&quot;sortable&quot;: true},
 { &quot;label&quot;: &quot;#Records&quot;, &quot;fieldName&quot;: &quot;RcdNbr__c&quot;, &quot;type&quot;:&quot;number&quot;,&quot;sortable&quot;: true},
 { &quot;label&quot;: &quot;Ratio failed&quot;, &quot;fieldName&quot;: &quot;RcdFailNbrRatio__c&quot;, &quot;type&quot;:&quot;number&quot;,
-   &quot;cellAttributes&quot;:{&quot;format-style&quot;:&quot;currency&quot;, &quot;currency-code&quot;:&quot;%&quot;},&quot;sortable&quot;: true},
+&quot;cellAttributes&quot;:{&quot;format-style&quot;:&quot;currency&quot;, &quot;currency-code&quot;:&quot;%&quot;},&quot;sortable&quot;: true},
 { &quot;label&quot;: &quot;Avg CPU&quot;, &quot;fieldName&quot;: &quot;CPUTimeAvg__c&quot;, &quot;type&quot;:&quot;number&quot;,&quot;sortable&quot;: true},
-{ &quot;label&quot;: &quot;Avg Wait&quot;, &quot;fieldName&quot;: &quot;WaitTimeAvg__c&quot;, &quot;type&quot;:&quot;number&quot;,&quot;sortable&quot;: true}
+{ &quot;label&quot;: &quot;Avg Wait&quot;, &quot;fieldName&quot;: &quot;WaitTimeAvg__c&quot;, &quot;type&quot;:&quot;number&quot;,&quot;sortable&quot;: true},
+{&quot;type&quot;: &quot;button-icon&quot;, &quot;initialWidth&quot;: 50,
+&quot;typeAttributes&quot;: {
+&quot;name&quot;: &quot;open&quot;, &quot;variant&quot;:&quot;bare&quot;,&quot;iconName&quot;: &quot;utility:open&quot;}
+}
 ]
 }</value>
     </values>
@@ -76,7 +80,7 @@
     </values>
     <values>
         <field>QuerySOQL__c</field>
-        <value xsi:type="xsd:string">Select Period__c, JobNbr__c, JobEmptyRatio__c, RcdNbr__c, RcdFailNbrRatio__c, WaitTimeAvg__c, CPUTimeAvg__c from sfpegQueueableLog__c  where ProcessName__c = &apos;{{{PROCESS}}}&apos; order by Id desc limit 10</value>
+        <value xsi:type="xsd:string">Select Period__c, JobNbr__c, JobEmptyRatio__c, RcdNbr__c, RcdFailNbrRatio__c, WaitTimeAvg__c, CPUTimeAvg__c from sfpegQueueableLog__c where ProcessName__c = &apos;{{{PROCESS}}}&apos; order by Id desc limit 10</value>
     </values>
     <values>
         <field>QueryType__c</field>
@@ -84,7 +88,7 @@
     </values>
     <values>
         <field>RowActions__c</field>
-        <value xsi:nil="true"/>
+        <value xsi:type="xsd:string">sfpegOpenEdit</value>
     </values>
     <values>
         <field>Scope__c</field>

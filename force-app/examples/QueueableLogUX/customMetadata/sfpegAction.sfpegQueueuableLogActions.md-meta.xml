@@ -6,16 +6,16 @@
         <field>Actions__c</field>
         <value xsi:type="xsd:string">[
 {
-    &quot;name&quot;: &quot;CheckLaunch&quot;, &quot;label&quot;: &quot;CheckLaunch&quot;,
-    &quot;action&quot;: {
-        &quot;type&quot;: &quot;apex&quot;,
-        &quot;params&quot;: {
-            &quot;name&quot;: &quot;sfpegQueueableLaunch_SVC&quot;,
-            &quot;params&quot;: {
-                &quot;CLASS&quot;: &quot;{{{RCD.ProcessName__c}}}&quot;
-            }
-        }
-    }
+&quot;name&quot;: &quot;CheckLaunch&quot;, &quot;label&quot;: &quot;CheckLaunch&quot;,
+&quot;action&quot;: {
+&quot;type&quot;: &quot;apex&quot;,
+&quot;params&quot;: {
+&quot;name&quot;: &quot;sfpegQueueableLaunch_SVC&quot;,
+&quot;params&quot;: {
+&quot;CLASS&quot;: &quot;{{{RCD.ProcessName__c}}}&quot;
+}
+}
+}
 },
 {
 &quot;name&quot;: &quot;StopQueueable&quot;, &quot;label&quot;: &quot;StopQueueable&quot;,
