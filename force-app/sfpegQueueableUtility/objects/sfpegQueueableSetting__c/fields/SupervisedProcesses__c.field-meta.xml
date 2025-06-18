@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>SupervisedProcesses__c</fullName>
+    <description>CSV list of Queueable Apex classes which should be relaunched periodically (when daily limit has been reached).</description>
+    <inlineHelpText>CSV list of Queueable Apex classes which should be relaunched periodically (when daily limit has been reached).</inlineHelpText>
+    <label>Supervised Processes</label>
+    <required>false</required>
+    <trackTrending>false</trackTrending>
+    <type>TextArea</type>
+</CustomField>

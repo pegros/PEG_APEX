@@ -2,7 +2,6 @@
 <CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
     <fullName>Message__c</fullName>
     <description>Concatenation of job execution messages (possibly truncated if too many).</description>
-    <externalId>false</externalId>
     <label>Message</label>
     <length>125000</length>
     <trackTrending>false</trackTrending>

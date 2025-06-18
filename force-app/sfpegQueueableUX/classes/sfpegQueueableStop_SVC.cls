@@ -36,7 +36,7 @@
 public with sharing class sfpegQueueableStop_SVC extends sfpegAction_SVC  {
 
     /***
-  * @description  Standard override of the sfpegAction_SVC execute() method
+    * @description  Standard override of the sfpegAction_SVC execute() method
     *               to execute a checkLaunch() via the sfpegQueueableLaunch_SVC
     *               of the Apex singleton Apex class name provided via the 
     *               CLASS input parameter (method parameter is ignored).
@@ -66,10 +66,10 @@ public with sharing class sfpegQueueableStop_SVC extends sfpegAction_SVC  {
             List<AsyncApexJob> apexJobs = [ SELECT Id, Status, JobType
                                             FROM AsyncApexJob 
                                             WHERE JobType = 'Queueable'
-                                            AND Status IN ('Queued','Preparing','Processing')
-                                            AND ApexClass.Name = :queueableName
-                                            ORDER BY Id asc
-                                            LIMIT :maxJobs];
+                                                AND Status IN ('Queued','Preparing','Processing')
+                                                AND ApexClass.Name = :queueableName
+                                            ORDER BY Id ASC
+                                            LIMIT :maxJobs]; //NOPMD bypass CRUD controls + bypass warning on select in loop (should never occur)
             sfpegDebug_UTL.fine('#apexJobs retrieved',apexJobs.size());
 
             if (apexJobs.size() == 0) {

@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MinRelaunchRatio__c</fullName>
+    <defaultValue>80.00</defaultValue>
+    <description>Min. ratio of DailyAsyncApexExecutions governor limit for which processes are actually relaunched by supervision schedulable process.</description>
+    <inlineHelpText>Min. ratio of DailyAsyncApexExecutions governor limit for which processes are actually relaunched by supervision schedulable process.</inlineHelpText>
+    <label>Min Relaunch Ratio</label>
+    <precision>6</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

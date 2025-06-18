@@ -33,7 +33,7 @@
 * SOFTWARE.
 ***/
 
-public with sharing class sfpegGroupControl_UTL {
+public with sharing class sfpegGroupControl_UTL { // NOPMD bypass naming convention
 
     //####################################################################################################
     // DATA STRUCTURES
@@ -173,7 +173,7 @@ public with sharing class sfpegGroupControl_UTL {
     /***
     * @description	Standard public constructor used to launch the Queueable process.
     ***/
-    public sfpegGroupControl_UTL(final sfpegGroupManagement_UTL.GlobalConfiguration groupConfig, ControlConfiguration controlConfig) {
+    public sfpegGroupControl_UTL(final sfpegGroupManagement_UTL.GlobalConfiguration groupConfig, ControlConfiguration controlConfig) { // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.debug('START standard init');
         this.creationTS = System.now();
 
@@ -254,7 +254,7 @@ public with sharing class sfpegGroupControl_UTL {
     *               requeue itself when there are still elements to process.
     ***/
     @TestVisible
-    private sfpegGroupControl_UTL(final sfpegGroupManagement_UTL.GlobalConfiguration groupConfig, ControlConfiguration controlConfig, final Set<String> groupFields, final String structureQuery, final Integer iteration, final ID lastRecordId) {
+    private sfpegGroupControl_UTL(final sfpegGroupManagement_UTL.GlobalConfiguration groupConfig, ControlConfiguration controlConfig, final Set<String> groupFields, final String structureQuery, final Integer iteration, final ID lastRecordId) {  // NOPMD bypass long parameter list
         sfpegDebug_UTL.debug('START for requeuing iteration',iteration);
         this.creationTS     = System.now();
         this.groupConfig    = groupConfig;
@@ -280,7 +280,7 @@ public with sharing class sfpegGroupControl_UTL {
     *               (null if end of processing reached)
     * @exception    None special (all catched and logged).
     ***/     
-    public sfpegGroupControl_UTL execute(){
+    public sfpegGroupControl_UTL execute(){  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.info('START iteration',this.iteration);
         sfpegDebug_UTL.fine('Current lastRecordId',this.lastRecordId);
         sfpegDebug_UTL.finest('Current groupConfig',this.groupConfig);
@@ -292,6 +292,13 @@ public with sharing class sfpegGroupControl_UTL {
         this.execContext = new sfpegQueueableContext_SVC(this.controlConfig.className,this.iteration, this.creationTS);
         sfpegDebug_UTL.finer('New context init',this.execContext);
 
+        // Check if we're within the allowed ratio of DailyAsyncApexExecutions
+        if (!sfpegQueueable_UTL.isWithinExecutionRatio()) {
+            execContext.logExecutionAbort('STOP: Daily queueable limit reached');
+            sfpegDebug_UTL.warn('END / Queueable limit reached');
+            return null;
+        }
+        
         if (this.groupConfig.useRT) {
             sfpegDebug_UTL.finest('Group Naming with RT');
             this.recordTypeMap = ((SObject)Type.forName('Schema.' + this.groupConfig.structObject).newInstance()).getSObjectType().getDescribe().getRecordTypeInfosById();
@@ -343,16 +350,16 @@ public with sharing class sfpegGroupControl_UTL {
                 sfpegDebug_UTL.finest('Name root init',iterNR);
 
                 String fieldDetails = checkGroup(iterConfig.structLocal,iterNR + iterConfig.localSuffix, iterRecord);
-                if (fieldDetails != null) iterDetails.add(fieldDetails);
+                if (fieldDetails != null) {iterDetails.add(fieldDetails);}
 
                 if (String.isNotBlank(iterConfig.structUp)) {
                     fieldDetails = checkGroup(iterConfig.structUp,iterNR + iterConfig.upSuffix, iterRecord);
-                    if (fieldDetails != null) iterDetails.add(fieldDetails);
+                    if (fieldDetails != null) {iterDetails.add(fieldDetails);}
                 }
 
                 if (String.isNotBlank(iterConfig.structDown)) {
                     fieldDetails = checkGroup(iterConfig.structDown,iterNR + iterConfig.downSuffix, iterRecord);
-                    if (fieldDetails != null) iterDetails.add(fieldDetails);
+                    if (fieldDetails != null) {iterDetails.add(fieldDetails);}
                 }
             }
 
@@ -440,7 +447,7 @@ public with sharing class sfpegGroupControl_UTL {
             Group groupRcd = groupMap.get(groupId);
             sfpegDebug_UTL.finest('Group found with name',groupRcd?.Name);
             this.groupMap.remove(groupId);
-            if (groupRcd.Name == groupName) {
+            if (groupRcd?.Name == groupName) {
                 sfpegDebug_UTL.finer('END OK / Group found with correct name for ID',groupId);
                 return null;
             }
@@ -455,64 +462,6 @@ public with sharing class sfpegGroupControl_UTL {
         return 'Invalid Group ID set: ' + groupId + ' for ' + groupField;
     }
 
-
-    /***
-    * @description  Private utility method controlling the number of members of a Public Group registered on a Structure
-    * @return       String Comment to register on the Structure (null if Status OK)
-    ***/  
-    /*private String checkGroupMbrs(final String groupField, final String statusField, SObject structure, final Map<ID,Integer> groupMbrMap, final GroupType type) {
-        sfpegDebug_UTL.finer('START with structure', structure.Id);
-        sfpegDebug_UTL.finer('for group name', groupField);
-
-        String groupId = (String)structure.get(groupField);
-        if (String.isBlank(groupId)) {
-            sfpegDebug_UTL.finer('END OK / Ignoring null Group ID on structure ID',structure.Id);
-            return null;
-        }
-        sfpegDebug_UTL.finer('Analysing group ID ',groupId);
-
-        if (groupMbrMap.containsKey(groupId)) {
-            Integer mbrCount = groupMbrMap.get(groupId);
-            sfpegDebug_UTL.finest('Group has #members',mbrCount);
-            if (type == GroupType.UP) {
-                if (structure.isSet(this.sharingConfig.structParentId) && String.isNotBlank((String)(structure.get(this.sharingConfig.structParentId)))) {
-                    sfpegDebug_UTL.finest('Structure has parent');
-                    if (mbrCount != 2) {
-                        sfpegDebug_UTL.warn('END KO / With parent, UP Group should have 2 members',groupId);
-                        structure.put(this.sharingConfig.structStatus, true);
-                        return 'UP Group ' + groupId + ' (' + groupField + ') should have 2 members';
-                    }
-                }
-                else {
-                    sfpegDebug_UTL.fine('Structure has no parent');
-                    if (mbrCount != 1) {
-                        sfpegDebug_UTL.warn('END KO / Without parent, UP Group should have 1 member',groupId);
-                        structure.put(this.sharingConfig.structStatus, true);
-                        return 'UP Group ' + groupId + ' (' + groupField + ') should have 1 member';
-                    }
-                }
-            }
-        }
-        else {
-            sfpegDebug_UTL.finest('Group has no member');
-            if ((Boolean)structure.get(statusField)) {
-                sfpegDebug_UTL.finer('END OK / No member available, Init pending on structure ID',structure.Id);
-                return null;
-            }
-            else if (type == GroupType.UP) {
-                sfpegDebug_UTL.warn('END KO / UP Group should have at least 1 member',groupId);
-                structure.put(this.sharingConfig.structStatus, true);
-                return 'UP Group ' + groupId + ' (' + groupField + ') should have min 1 member';
-            }
-            else if (type == GroupType.DOWN) {
-                sfpegDebug_UTL.warn('END KO / DOWN Group should have at least 1 member',groupId);
-                structure.put(this.sharingConfig.structStatus, true);
-                return 'DOWN Group ' + groupId + ' (' + groupField + ') should have min 1 member';
-            }
-        }
-        sfpegDebug_UTL.finer('END OK');
-        return null;
-    }*/
 
     /***
     * @description  Private utility method to generate the standard name root of Public Groups related to a Structure

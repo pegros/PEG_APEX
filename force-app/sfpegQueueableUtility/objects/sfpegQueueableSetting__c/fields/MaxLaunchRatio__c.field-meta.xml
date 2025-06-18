@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>MaxLaunchRatio__c</fullName>
+    <defaultValue>90.00</defaultValue>
+    <description>Max. ratio of DailyAsyncApexExecutions governor limit for which new processes are actually enqueued</description>
+    <inlineHelpText>Max. ratio of DailyAsyncApexExecutions governor limit for which new processes are actually enqueued</inlineHelpText>
+    <label>Max Launch Ratio</label>
+    <precision>6</precision>
+    <required>false</required>
+    <scale>2</scale>
+    <trackTrending>false</trackTrending>
+    <type>Percent</type>
+</CustomField>

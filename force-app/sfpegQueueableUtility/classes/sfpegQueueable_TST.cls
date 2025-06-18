@@ -38,14 +38,28 @@ public with sharing class sfpegQueueable_TST {
     @isTest
 	public static void checkLaunch() {
         sfpegDebug_UTL.debug('START');
+        sfpegDebug_UTL.MAX_LOG_LEVEL = 8;
+        
         try {
             sfpegQueueable_UTL.checkLaunch('sfpegQueueable_UTL');
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('TEST #1 OK - Launch with valid class');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid check',e.getMessage());
-            Assert.fail('No exception should be raised for valid check');
+            sfpegDebug_UTL.error('TEST #1 KO - Exception raised for valid check',e.getMessage());
+            Assert.fail('No exception should be raised for valid check (TEST #1)');
         }
+        
+        try {
+            sfpegDebug_UTL.MAX_LOG_LEVEL = 8;
+            sfpegQueueable_UTL.checkLaunch('DUMMY_APEX_CLASS');
+            sfpegDebug_UTL.error('TEST #2 KO - No exception raised for invalid class name');
+            Assert.fail('Exception should be raised for invalid class name (TEST #2)');
+        }
+        catch(Exception e) {
+            sfpegDebug_UTL.debug('TEST #2 OK - Exception properly raised for invalid class name',e.getMessage());
+        }
+        
+		sfpegDebug_UTL.debug('END');
     }
     
     // Testing utilities 
@@ -58,10 +72,10 @@ public with sharing class sfpegQueueable_TST {
             Integer deltaTS = sfpegQueueable_UTL.getTimeDelta(startTS,endTS);
             sfpegDebug_UTL.fine('delta computed',deltaTS);
 			Assert.areEqual(2000,deltaTS,'Computed time delta should be 2 seconds, i.e. 2000 ms');
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('END OK');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid time delta',e.getMessage());
+            sfpegDebug_UTL.error('END KO - Exception raised for valid time delta',e.getMessage());
 			Assert.fail('No exception should be raised for valid time delta');
         }
     }
@@ -74,10 +88,10 @@ public with sharing class sfpegQueueable_TST {
             String context = sfpegQueueable_UTL.getLastContext('sfpegQueueable_UTL');
             sfpegQueueable_UTL.logExecution('sfpegQueueable_UTL', 1);
             context = sfpegQueueable_UTL.getLastContext('sfpegQueueable_UTL');
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('END OK');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid last context',e.getMessage());
+            sfpegDebug_UTL.error('END KO - Exception raised for valid last context',e.getMessage());
             Assert.fail('No exception should be raised for valid last context');
         }
     }
@@ -88,18 +102,16 @@ public with sharing class sfpegQueueable_TST {
         try {
             sfpegQueueableLog__c log = sfpegQueueable_UTL.getLogData('sfpegQueueable_UTL', 1, 0, 'Test', 'Test', 150);
             sfpegQueueable_UTL.logPriorExecution(log);
-            sfpegDebug_UTL.error('Initial log registered');
+            sfpegDebug_UTL.debug('Initial log registered');
 
             String test = 'TEST ';
-            for (Integer iter = 0; iter <125000; iter++) test += 'x';
+            for (Integer iter = 0; iter < 125000; iter++) {test += 'x';}
             log = sfpegQueueable_UTL.getLogData('sfpegQueueable_UTL', 1, 0, test, 'Test', 200);
             sfpegQueueable_UTL.logPriorExecution(log);
-            sfpegDebug_UTL.error('Revised log registered');
-
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('END OK - Prior execution registered');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid prior log',e.getMessage());
+            sfpegDebug_UTL.error('END KO - Exception raised for valid prior log',e.getMessage());
             Assert.fail('No exception should be raised for valid prior log');
         }
     }
@@ -109,10 +121,10 @@ public with sharing class sfpegQueueable_TST {
         sfpegDebug_UTL.debug('START');
         try {
             sfpegQueueable_UTL.logExecution('sfpegQueueable_UTL', 1);
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('END OK');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid record number',e.getMessage());
+            sfpegDebug_UTL.error('END KO - Exception raised for valid record number',e.getMessage());
             Assert.fail('No exception should be raised for valid record number');
         }
     }
@@ -122,10 +134,10 @@ public with sharing class sfpegQueueable_TST {
         sfpegDebug_UTL.debug('START');
         try {
             sfpegQueueable_UTL.logExecution('sfpegQueueable_UTL', 1, 0, 'test message');
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('END OK');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid record number and failures',e.getMessage());
+            sfpegDebug_UTL.error('END KO - Exception raised for valid record number and failures',e.getMessage());
             Assert.fail('No exception should be raised for valid record number and failures');
         }
     }
@@ -135,10 +147,10 @@ public with sharing class sfpegQueueable_TST {
         sfpegDebug_UTL.debug('START');
         try {
             sfpegQueueable_UTL.logExecution('sfpegQueueable_UTL', 1, 1);
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('END OK');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid record number and wait time',e.getMessage());
+            sfpegDebug_UTL.error('END KO - Exception raised for valid record number and wait time',e.getMessage());
             Assert.fail('No exception should be raised for valid record number and wait time');
         }
     }
@@ -148,10 +160,10 @@ public with sharing class sfpegQueueable_TST {
         sfpegDebug_UTL.debug('START');
         try {
             sfpegQueueable_UTL.logExecution('sfpegQueueable_UTL', 1, 0, 1);
-            sfpegDebug_UTL.debug('END');
+            sfpegDebug_UTL.debug('END OK');
         }
         catch(Exception e) {
-            sfpegDebug_UTL.error('Exception raised for valid record number and failures and wait time',e.getMessage());
+            sfpegDebug_UTL.error('END KO - Exception raised for valid record number and failures and wait time',e.getMessage());
             Assert.fail('No exception should be raised for valid record number and failures and wait time');
         }
     }

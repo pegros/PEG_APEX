@@ -3,10 +3,19 @@
 
 ## Introduction
 
-The **sfpegDebug_UTL** Apex class enables to optimise and homogenize `System.debug()` statements within
-Apex code. Its primary objective is to keep all detailed debug statements in the Apex code to support
-any investigation on a production Org when necessary, without having too much performance impact coming
-from implicit data `toString()` serializations.
+The **sfpegDebug_UTL** Apex utility class enables to optimise and homogenize
+`System.debug()` statements within Apex code.
+
+Its primary objective is to keep a large number of detailed debug statements in the Apex code to
+support any investigation on a production Org when necessary, while avoiding too much
+performance impact, e.g. coming from implicit data `toString()` serializations.
+
+
+## Installation
+
+It may be installed and upgraded as the `sfpegApex-debug` unlocked package directly
+on your Org via the installation link provided in the [release notes](#release-notes).
+
 
 ## Solution Principles
 
@@ -19,8 +28,12 @@ the actual logging level of the User, e.g. as in:
 
 ```System.debug(LoggingLevel.FINE,'Account created --> ' + newAccount);```
 
-The strategy is therefore to avoid these implicit serializations by testing the current User
-logging level before generating the `System.debug()` statements and the parameter serializations.
+The strategy is therefore to avoid these implicit serializations by passing the parameter as a
+separate input to the `sfpegDebug_UTL` logging method, testing the current User logging level
+before generating the actual  `System.debug()` statements and the parameter serializations.
+The same log statement would then look as follows:
+
+```sfpegDebug_UTL.fine('Account created',newAccount);```
 
 As the standard User current debug level is not accessible from Apex, the **sfpegDebugSetting**
 hierarchical custom setting has been defined with a **maximum debug level** parameter leveraged 
@@ -28,6 +41,7 @@ by the utility class before generating the actual `System.debug()` statement.
 
 ⚠️ This **maximum debug level** parameter is a first filter, the standard debug levels being then
 applied afterwards by the platform when processing the `System.debug()` statement.
+
 
 ### Debug Log Homogenization
 
@@ -42,24 +56,25 @@ The proposed approach is to standardise all debug logs in the following way:
 Class and method names are automatically added by the utility class and the developer
 only needs to focus on the core message and optional parameter.
 
+
 ### Debug Level Management
 
 Standard `System.debug` statement enable developers to set a debug level as first 
 parameter, leveraging the `LoggingLevel` enum. This requires the developer to type
 in additional debug information and this results in having a vast majority of
-debug statements done at the default `LoggingLevel.DEBUG`.
+debug statements done at the default `LoggingLevel.DEBUG` level.
 
 In order to ease work for developers, separate logging statements are proposed 
 for each level (in a similar way to the Javascript `console.log` statements):
-* `error()` to generate a log at `LoggingLevel.ERROR` level
-* `warn()` to do it at `LoggingLevel.WARN` level
+* `sfpegDebug_UTL.error()` to generate a log at `LoggingLevel.ERROR` level
+* `sfpegDebug_UTL.warn()` to do it at `LoggingLevel.WARN` level
 * ...
-* `finest()` at the lowest level
+* `sfpegDebug_UTL.finest()` at the lowest level
 
-All statements exist in 2 variants, i.e. with and without additional information
+ℹ️ All statements exist in 2 variants, i.e. with and without additional information
 provided. E.g.
-* `debug('simple text message')` (without)
-* `debug('message with additional information', additionalInfoObject)` (with)
+* `sfpegDebug_UTL.debug('simple text message')` (without)
+* `sfpegDebug_UTL.debug('message with additional information', additionalInfoObject)` (with)
 
 
 ## Usage
@@ -73,7 +88,7 @@ logging level.
 ![sfpegDebug_UTL Usage](/media/sfpegDebugUtilityUsage.png)
 
 **⚠️ Good practices**:
-* go down one level when entering a `for()` loop (e.g. from `debug()` to `fine()`).
+* go down at least one level when entering a `for()` loop (e.g. from `debug()` to `fine()`).
 * use a low level log statement (`finer()` or `finest()`) when providing a large additional
 information object (e.g. a list of records)
 * never concatenate strings in the text message parameter and use 2 log statements when
@@ -130,3 +145,16 @@ actual maximum logging level authorized.
 * Class and method names are retrieved via dummy `StringException` instantiation
 * In the **sfpegDebugSetting** custom setting, the `Max Debug Level` property is an Integer
 as picklist values are not available in such metadata. 
+* Class and method name are fetched by the `sfpegDebug_UTL` utility by triggering and
+catching a dummy string exception. These exceptions appear in the technical log details
+but not at the user debug log level.
+* ⚠️ **Beware** that standard Apex debug logs may not all be logged when executed from a test class.
+This is not a problem related to this utility class.
+
+
+## Release Notes
+
+### June 2025 - v1.0
+* First version with the new unlocked package structure.
+* Minor code refactoring.
+* Install it from [here](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4dIAE).

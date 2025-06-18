@@ -34,7 +34,7 @@
 * SOFTWARE.
 ***/
 
-public with sharing class sfpegGroupManagement_UTL  {
+public with sharing class sfpegGroupManagement_UTL  {  // NOPMD bypass naming convention
 
     //################################################################################################
     // STATIC CONSTANTS
@@ -288,7 +288,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     *               initializes the processingConfig variable out of it.
     * @exception    NullPointerException Raised when there is a missing parameter in the provided configuration.
     ***/
-    public sfpegGroupManagement_UTL(final GlobalConfiguration globalConfig) {
+    public sfpegGroupManagement_UTL(final GlobalConfiguration globalConfig) {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.fine('START for first iteration');
         this.creationTS = System.now();
 
@@ -475,7 +475,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     *               requeue itself when there are still elements to process.
     ***/
     @TestVisible
-    private sfpegGroupManagement_UTL(final GlobalConfiguration globalConfig, final ProcessConfiguration processConfig, final Integer iteration, final dateTime deletionTS, final ID lastRecordId) {
+    private sfpegGroupManagement_UTL(final GlobalConfiguration globalConfig, final ProcessConfiguration processConfig, final Integer iteration, final dateTime deletionTS, final ID lastRecordId) {  // NOPMD bypass long parameter list
         sfpegDebug_UTL.fine('START for new iteration', iteration);
         sfpegDebug_UTL.finer('with deletionTS', deletionTS);
         sfpegDebug_UTL.finer('and lastRecordId', lastRecordId);
@@ -498,7 +498,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     *               field updated for upsert.
     ***/
     @TestVisible
-    private sfpegGroupManagement_UTL(final GlobalConfiguration globalConfig, final ProcessConfiguration processConfig, final Integer iteration, final dateTime deletionTS, final ID lastRecordId, final sfpegQueueableContext_SVC execContext, final Map<ID,SObject> structureMap, final Boolean doFilter) {
+    private sfpegGroupManagement_UTL(final GlobalConfiguration globalConfig, final ProcessConfiguration processConfig, final Integer iteration, final dateTime deletionTS, final ID lastRecordId, final sfpegQueueableContext_SVC execContext, final Map<ID,SObject> structureMap, final Boolean doFilter) {  // NOPMD bypass long parameter list 
         sfpegDebug_UTL.fine('START for 2nd step of iteration',iteration);
         sfpegDebug_UTL.finer('with deletionTS', deletionTS);
         sfpegDebug_UTL.finer('with lastRecordId', lastRecordId);
@@ -541,7 +541,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     *               in a new enqueued process (null if end of processing reached)
     * @exception    None special (all catched and logged).
     ***/     
-    public sfpegGroupManagement_UTL execute(){
+    public sfpegGroupManagement_UTL execute(){  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.info('START for iteration',this.iteration);
         sfpegDebug_UTL.finest('Current globalConfig',this.globalConfig);
         sfpegDebug_UTL.finest('Current groupConfigs',this.globalConfig?.groupConfigs);
@@ -556,6 +556,13 @@ public with sharing class sfpegGroupManagement_UTL  {
         else {
             this.execContext = new sfpegQueueableContext_SVC(this.globalConfig.className,this.iteration, this.creationTS);
             sfpegDebug_UTL.finer('New context init',this.execContext);
+
+            // Check if we're within the allowed ratio of DailyAsyncApexExecutions
+            if (!sfpegQueueable_UTL.isWithinExecutionRatio()) {
+                execContext.logExecutionAbort('STOP: Daily queueable limit reached');
+                sfpegDebug_UTL.warn('END / Queueable limit reached');
+                return null;
+            }
 
             String lastContext = sfpegQueueable_UTL.getLastContext(this.globalConfig.className);
             sfpegDebug_UTL.finer('LastContext fetched',lastContext);
@@ -629,7 +636,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception	None special (all catched and logged).
     ***/
     @TestVisible
-    private void doRegistrations(){
+    private void doRegistrations(){  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.fine('START');
 
         if ((this.structureMap == null) || (this.structureMap.isEmpty())) {
@@ -740,7 +747,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception    None special (all catched and logged).
     ***/
     @TestVisible
-    private Boolean processGroups2Delete(){
+    private Boolean processGroups2Delete(){  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.fine('START');
         this.execContext.operationName = OPE_DELETE;
 
@@ -824,7 +831,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception    None special (all catched and logged).
     ***/
     @TestVisible
-    private Boolean processMissingGroups() {
+    private Boolean processMissingGroups() {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.fine('START');
         this.execContext.operationName = OPE_CREATE;
 
@@ -987,7 +994,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception    None special (all catched and logged).
     ***/
     @TestVisible
-    private Boolean doMembershipControl() {
+    private Boolean doMembershipControl() {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.fine('START');
         this.execContext.operationName = OPE_UPDATE;
 
@@ -1014,14 +1021,14 @@ public with sharing class sfpegGroupManagement_UTL  {
             sfpegDebug_UTL.finer('Fetching members on object',iterMbrObj);
             sfpegDebug_UTL.finest('Using member Query',this.processConfig.mbrQueryMap.get(iterMbrObj)); 
 
-            List<SObject> iterMembers = Database.queryWithBinds(this.processConfig.mbrQueryMap.get(iterMbrObj),mbrQueryParams,AccessLevel.SYSTEM_MODE);
+            List<SObject> iterMembers = Database.queryWithBinds(this.processConfig.mbrQueryMap.get(iterMbrObj),mbrQueryParams,AccessLevel.SYSTEM_MODE); // NOPMD bypass operations in loops as number of iterations is limited
             sfpegDebug_UTL.finer('#Members fetched',iterMembers.size());
 
             Map<ID,List<SObject>> iterMbrMap = new Map<ID,List<SObject>>();
             String iterLookup = this.processConfig.mbrStructMap.get(iterMbrObj);
             for (SObject iterMbr : iterMembers) {
                 ID iterMbrStruct = (ID) iterMbr.get(iterLookup);
-                if (!iterMbrMap.containsKey(iterMbrStruct)) iterMbrMap.put(iterMbrStruct,new List<SObject>());
+                if (!iterMbrMap.containsKey(iterMbrStruct)) {iterMbrMap.put(iterMbrStruct,new List<SObject>());}
                 iterMbrMap.get(iterMbrStruct).add(iterMbr);
             }
             sfpegDebug_UTL.finer('Members split over #Structures',iterMbrMap.size());
@@ -1049,7 +1056,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception    None special (all catched and logged).
     ***/
     @TestVisible
-    private void fetchMemberships() {
+    private void fetchMemberships() {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.fine('START');
         this.execContext.operationName = 'UPDATE';
 
@@ -1123,14 +1130,14 @@ public with sharing class sfpegGroupManagement_UTL  {
 
         // Fetching Group Members
         Map<ID,Set<GroupMember>> groupMbrs = this.groupMap.get('local');
-        for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE GroupId IN :groupMbrs.keySet()]) {
+        for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE GroupId IN :groupMbrs.keySet() WITH SYSTEM_MODE]) {
             groupMbrs.get(iter.GroupId).add(iter);
         }
         sfpegDebug_UTL.fine('Group Members registered for #Local Groups',groupMbrs.size());
 
         groupMbrs = this.groupMap.get('upwards');
         if (groupMbrs != null) {
-            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE GroupId IN :groupMbrs.keySet()]) {
+            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE GroupId IN :groupMbrs.keySet() WITH SYSTEM_MODE]) {
                 groupMbrs.get(iter.GroupId).add(iter);
             }
             sfpegDebug_UTL.fine('Group Members registered for #Upwards Groups',groupMbrs.size());
@@ -1141,7 +1148,7 @@ public with sharing class sfpegGroupManagement_UTL  {
 
         groupMbrs = this.groupMap.get('downwards');
         if (groupMbrs != null) {
-            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE GroupId IN :groupMbrs.keySet()]) {
+            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE GroupId IN :groupMbrs.keySet() WITH SYSTEM_MODE]) {
                 groupMbrs.get(iter.GroupId).add(iter);
             }
             sfpegDebug_UTL.fine('Group Members registered for #Downwards Groups',groupMbrs.size());
@@ -1154,7 +1161,7 @@ public with sharing class sfpegGroupManagement_UTL  {
         Set<ID> checkGroups;
         if (groupMbrs != null) {
             checkGroups = this.groupMap.get('down').keySet();
-            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE (GroupId IN :groupMbrs.keySet()) AND (UserOrGroupId IN :checkGroups)]) {
+            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE (GroupId IN :groupMbrs.keySet()) AND (UserOrGroupId IN :checkGroups)  WITH SYSTEM_MODE]) {
                 groupMbrs.get(iter.GroupId).add(iter);
             }
             sfpegDebug_UTL.fine('Group Members registered for #Parent Downwards Groups',groupMbrs.size());
@@ -1166,7 +1173,7 @@ public with sharing class sfpegGroupManagement_UTL  {
         groupMbrs = this.groupMap.get('childUp');
         if (groupMbrs != null) {
             checkGroups = this.groupMap.get('up').keySet();
-            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE (GroupId IN :groupMbrs.keySet()) AND (UserOrGroupId IN :checkGroups)]) {
+            for (GroupMember iter : [SELECT UserOrGroupId, GroupId FROM GroupMember WHERE (GroupId IN :groupMbrs.keySet()) AND (UserOrGroupId IN :checkGroups)  WITH SYSTEM_MODE]) {
                 groupMbrs.get(iter.GroupId).add(iter);
             }
             sfpegDebug_UTL.fine('Group Members registered for #Child Upwards Groups',groupMbrs.size());
@@ -1192,7 +1199,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception    None special (all catched and logged).
     ***/
     @TestVisible
-    private Map<ID,SObject> controlMembership() {
+    private Map<ID,SObject> controlMembership() {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.fine('START with #Structures',this.structureMap.size());
 
         Map<ID,SObject> struct4update = new Map<ID,SObject>();
@@ -1278,7 +1285,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception	None special (all catched and logged).
     ***/
     @TestVisible
-    private void checkLocalGroup(final SObject structure, final GroupConfiguration config) {
+    private void checkLocalGroup(final SObject structure, final GroupConfiguration config) {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.finer('START for structure',structure.get('Id'));
         sfpegDebug_UTL.finest('and group',config.structLocal);
 
@@ -1369,7 +1376,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception	None special (all catched and logged).
     ***/
     @TestVisible
-    private void checkUpGroup(final SObject structure, final GroupConfiguration config) {
+    private void checkUpGroup(final SObject structure, final GroupConfiguration config) {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.finer('START for structure',structure.get('Id'));
         sfpegDebug_UTL.finest('and group',config.structUp);
 
@@ -1464,7 +1471,7 @@ public with sharing class sfpegGroupManagement_UTL  {
     * @exception	None special (all catched and logged).
     ***/
     @TestVisible
-    private void checkDownGroup(final SObject structure, final GroupConfiguration config) {
+    private void checkDownGroup(final SObject structure, final GroupConfiguration config) {  // NOPMD bypass cognitive complexity
         sfpegDebug_UTL.finer('START for structure',structure.get('Id'));
         sfpegDebug_UTL.finest('and group',config.structDown);
 

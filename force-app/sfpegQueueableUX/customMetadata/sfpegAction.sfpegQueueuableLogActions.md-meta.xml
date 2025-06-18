@@ -3,6 +3,10 @@
     <label>QueueuableLog Actions</label>
     <protected>false</protected>
     <values>
+        <field>ActionControls__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
         <field>Actions__c</field>
         <value xsi:type="xsd:string">[
 {

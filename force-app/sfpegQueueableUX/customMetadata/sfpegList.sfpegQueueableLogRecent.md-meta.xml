@@ -54,7 +54,7 @@
     </values>
     <values>
         <field>Permission__c</field>
-        <value xsi:type="xsd:string">VIRTUO_ManageQueueable</value>
+        <value xsi:nil="true"/>
     </values>
     <values>
         <field>QueryClass__c</field>

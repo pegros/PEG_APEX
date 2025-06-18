@@ -63,4 +63,9 @@ $RECYCLE.BIN/
 #Examples
 force-app/test
 force-app/main
-.sf/orgs
+force-app/*/old
+.sf
+.sf/orgs/*
+Deployment.md
+
+.eslintignore

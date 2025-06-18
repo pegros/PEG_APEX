@@ -46,6 +46,8 @@ public class sfpegGroupControl_TST {
     **/
     final static Integer RCD_NBR = 2;
 
+    private static final String STATUS_OK_FIELD = 'areGroupsOK__c';
+    private static final String STATUS_DETAILS_FIELD = 'KoGroupDetails__c';
 
     //##############################################################################
     // TEST INITIALIZATION

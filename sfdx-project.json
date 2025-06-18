@@ -1,12 +1,97 @@
 {
   "packageDirectories": [
     {
-      "path": "force-app",
+      "path": "force-app/main",
       "default": true
+    },
+    {
+      "versionName": "June 2025",
+      "versionNumber": "1.0.0.NEXT",
+      "path": "force-app/sfpegDebugUtility",
+      "default": false,
+      "package": "sfpegApex-debug",
+      "versionDescription": "Debug utility of the PEG_APEX package, see https://github.com/pegros/PEG_APEX/blob/master/help/sfpegDebugUtility.md",
+      "postInstallUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegDebugUtility.md#installation",
+      "releaseNotesUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegDebugUtility.md#release-notes"
+    },
+    {
+      "versionName": "June 2025",
+      "versionNumber": "1.0.0.NEXT",
+      "path": "force-app/sfpegQueueableUtility",
+      "default": false,
+      "package": "sfpegApex-queueable",
+      "versionDescription": "Queueable utility of the PEG_APEX package, see https://github.com/pegros/PEG_APEX/blob/master/help/sfpegQueueableUtility.md",
+      "postInstallUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegQueueableUtility.md#installation",
+      "releaseNotesUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegQueueableUtility.md#release-notes",
+      "dependencies": [
+        {
+          "package": "sfpegApex-debug",
+          "versionNumber": "1.0.0.LATEST"
+        }
+      ]
+    },
+    {
+      "versionName": "June 2025",
+      "versionNumber": "1.0.0.NEXT",
+      "path": "force-app/sfpegSharingGroupUtility",
+      "default": false,
+      "package": "sfpegApex-sharingGroups",
+      "versionDescription": "Sharing Group utility of the PEG_APEX package, see https://github.com/pegros/PEG_APEX/blob/master/help/sfpegSharingGroupUtility.md",
+      "postInstallUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegSharingGroupUtility.md#installation",
+      "releaseNotesUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegSharingGroupUtility.md#release-notes",
+      "dependencies": [
+        {
+          "package": "sfpegApex-debug",
+          "versionNumber": "1.0.0.LATEST"
+        },
+        {
+          "package": "sfpegApex-queueable",
+          "versionNumber": "1.0.0.LATEST"
+        }
+      ],
+      "apexTestAccess": {
+        "permissionSets": [
+          "sfpegSharingGroupTest"
+        ],
+        "permissionSetLicenses": []
+      }
+    },
+    {
+      "versionName": "June 2025",
+      "versionNumber": "1.0.0.NEXT",
+      "path": "force-app/sfpegQueueableUX",
+      "default": false,
+      "package": "sfpegApex-queueableUX",
+      "versionDescription": "UX extensions for the queueable utility of the PEG_APEX package, see https://github.com/pegros/PEG_APEX/blob/master/help/sfpegQueueableUX.md",
+      "postInstallUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegQueueableUX.md#installation",
+      "releaseNotesUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegQueueableUX.md#release-notes",
+      "dependencies": [
+        {
+          "package": "sfpegApex-debug",
+          "versionNumber": "1.0.0.LATEST"
+        },
+        {
+          "package": "sfpegApex-queueable",
+          "versionNumber": "1.0.0.LATEST"
+        },
+        {
+          "subscriberPackageVersionId": "04tJ7000000xDepIAE"
+        }
+      ]
     }
   ],
   "name": "PEG_APEX",
   "namespace": "",
   "sfdcLoginUrl": "https://login.salesforce.com",
-  "sourceApiVersion": "56.0"
+  "sourceApiVersion": "63.0",
+  "packageAliases": {
+    "sfpegApex-debug": "0HoJ7000000XZCNKA4",
+    "sfpegApex-queueable": "0HoJ7000000XZCSKA4",
+    "sfpegApex-sharingGroups": "0HoJ7000000XZCXKA4",
+    "sfpegApex-queueableUX": "0HoJ7000000XZChKAO",
+    "sfpegApex-debug@1.0.0-1": "04tJ7000000xH4dIAE",
+    "sfpegApex-queueable@1.0.0-1": "04tJ7000000xH4iIAE",
+    "sfpegApex-sharingGroups@1.0.0-1": "04tJ7000000xH4nIAE",
+    "sfpegApex-queueableUX@1.0.0-1": "04tJ7000000xH4sIAE"
+  }
 }
