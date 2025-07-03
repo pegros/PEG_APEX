@@ -100,7 +100,7 @@ One efficient approach to queueable Apex processes is to enforce a singleton exe
 i.e. having only one job of a given queueable Apex class running at a given moment. 
 * this prevents job queue overflow and enforces better parallelisation of asynch processes
 * this provides more control on the order in which business logic should be applied on records
-* this reduces the risk of concurrent access to the same records
+* this reduces the risk of concurrent accesses to the same records
 
 Typical use case is to trigger an asynchronous process upon record creation / update to 
 finalize the records, e.g. because callouts are required or if its logic consumes too
@@ -291,6 +291,9 @@ until there is no record to process but you may also choose to start another pro
 * If you test from a developer Org, beware that there is a special behaviour with regards to queueable Apex :
 max 5 job iterations are allowed, an exception being raised at the 6th.
 
+⚠️ If you want to get Apex logs related to the included Apex logic, please remeber to actually configure the 
+max logging level in the `sfpegDebugSetting` custom setting (see `[sfpegApex-debug](/help/sfpegDebugUtility.md)`
+for more information)
 
 ## Release Notes
 
@@ -298,4 +301,4 @@ max 5 job iterations are allowed, an exception being raised at the 6th.
 * First version with the new unlocked package structure.
 * Minor code refactoring.
 * [Issue #1](/issues/1) on daily asynch Apex Org limit addressed
-* Install it from [here](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4iIAE).
+* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4iIAE).

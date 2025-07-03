@@ -90,4 +90,4 @@ from its whole set of customisation and extension capabilities.
 ### June 2025 - v1.0
 * First version with the new unlocked package structure.
 * Lightning record page layout added
-* Install it from [here](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4sIAE).
+* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4sIAE).

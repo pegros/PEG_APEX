@@ -344,11 +344,14 @@ These are standard Apex classes meant to be used within singleton Queueable
 framework provided by the **[sfpegQueueableUtility](/help/sfpegQueueableUtility.md)**
 class. It therefore requires this package to be installed first.
 
+⚠️ If you want to get Apex logs related to the included Apex logic, please remeber to actually configure the 
+max logging level in the `sfpegDebugSetting` custom setting (see `[sfpegApex-debug](/help/sfpegDebugUtility.md)`
+for more information)
 
 ## Release Notes
 
 ### June 2025 - v1.0
 * First version with the new unlocked package structure.
 * Minor code refactoring.
-* Install it from [here](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4nIAE).
+* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4nIAE).
 
