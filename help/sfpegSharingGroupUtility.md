@@ -37,7 +37,7 @@ objects to identify and track the records processed / to be processed.
 It may be installed and upgraded as the `sfpegApex-sharingGroups` unlocked package
 directly on your Org via the installation link provided in the [release notes](#release-notes).
 
-⚠️ It requires the `[sfpegApex-queueable](/help/sfpegQueueableUtility.md)` package to be
+⚠️ It requires the **[sfpegApex-queueable](/help/sfpegQueueableUtility.md)** package to be
 already installed on your Org (as it relies on it for singleton queueable execution and logging).
 
 
@@ -345,7 +345,7 @@ framework provided by the **[sfpegQueueableUtility](/help/sfpegQueueableUtility.
 class. It therefore requires this package to be installed first.
 
 ⚠️ If you want to get Apex logs related to the included Apex logic, please remeber to actually configure the 
-max logging level in the `sfpegDebugSetting` custom setting (see `[sfpegApex-debug](/help/sfpegDebugUtility.md)`
+max logging level in the `sfpegDebugSetting` custom setting (see **[sfpegApex-debug](/help/sfpegDebugUtility.md)**
 for more information)
 
 ## Release Notes

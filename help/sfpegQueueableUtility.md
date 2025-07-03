@@ -23,13 +23,13 @@ available.
 It may be installed and upgraded as the `sfpegApex-queueable` unlocked package
 directly on your Org via the installation link provided in the [release notes](#release-notes).
 
-⚠️ It requires the `[sfpegApex-debug](/help/sfpegDebugUtility.md)` package to be already installed on your Org (as it relies on it for debug logs).
+⚠️ It requires the **[sfpegApex-debug](/help/sfpegDebugUtility.md)** package to be already installed on your Org (as it relies on it for debug logs).
 
 After installation, you need to grant the `sfpegQueueableUsage` permission set to adminstrators in order to
 let them access the **Queueable Log** object tab.
 
-ℹ️ This Package may be extended with some UI actions and lists leveraging the [PEG_LIST](https://github.com/pegros/PEG_LIST) package.
-Please see `[sfpegApex-queueableUX](/help/sfpegQueueableUX.md)` package.
+ℹ️ This Package may be extended with some UI actions and lists leveraging the **[PEG_LIST](https://github.com/pegros/PEG_LIST)** package.
+Please see **[sfpegApex-queueableUX](/help/sfpegQueueableUX.md)** package.
 
 
 ## Solution Principles
@@ -292,7 +292,7 @@ until there is no record to process but you may also choose to start another pro
 max 5 job iterations are allowed, an exception being raised at the 6th.
 
 ⚠️ If you want to get Apex logs related to the included Apex logic, please remeber to actually configure the 
-max logging level in the `sfpegDebugSetting` custom setting (see `[sfpegApex-debug](/help/sfpegDebugUtility.md)`
+max logging level in the `sfpegDebugSetting` custom setting (see **[sfpegApex-debug](/help/sfpegDebugUtility.md)**
 for more information)
 
 ## Release Notes

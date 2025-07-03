@@ -21,7 +21,7 @@ associated CampaignMember records afterwards.
 It may be installed and upgraded as the `sfpegApex-campaigns` unlocked package directly
 on your Org via the installation link provided in the [release notes](#release-notes).
 
-⚠️ It requires the `[sfpegApex-debug](/help/sfpegDebugUtility.md)` package to be already installed on
+⚠️ It requires the **[sfpegApex-debug](/help/sfpegDebugUtility.md)** package to be already installed on
 your Org (as it relies on it for debug logs).
 
 After installation, you need to register a few `sfpegCampaignRT` custom
@@ -201,7 +201,7 @@ It may be necessary to bypass all business rules implemented in the Org when dep
 (the user deploying the package should have bypasses activated).
 
 ⚠️ If you want to get Apex logs related to the included triggers, please remeber to actually configure the 
-max logging level in the `sfpegDebugSetting` custom setting (see `[sfpegApex-debug](/help/sfpegDebugUtility.md)`
+max logging level in the `sfpegDebugSetting` custom setting (see **[sfpegApex-debug](/help/sfpegDebugUtility.md)**
 for more information)
 
 
