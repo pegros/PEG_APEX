@@ -45,6 +45,11 @@ The **sfpegSharingGroup_UTL** Apex class provides a generic Apex logic for Queue
 manage Public Groups linked to a  hierarchical Structure object to be used for Apex Sharing
 (local, upwards or downwards to each Structure record) and manage User Structure assignments.
 
+### [sfpegCampaignUtility](help/sfpegCampaignUtility.md)
+The **sfpegCampaign_UTL** Apex utility class (called from Campaign and CampaignMember
+Apex triggers) enables to implement some usual business logic missing in standard
+Salesforce for Campaign management.
+
 
 ## Technical Details
 

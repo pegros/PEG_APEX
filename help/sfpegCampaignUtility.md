@@ -3,8 +3,9 @@
 
 ## Introduction
 
-The **sfpegCampaign_TRG** Apex trigger enables to implement a few usual
-logic missing in standard Salesforce for Campaign management:
+The **sfpegCampaign_UTL** Apex utility class (called from Campaign and CampaignMember
+Apex triggers) enables to implement some usual business logic missing in standard
+Salesforce for Campaign management:
 * propagation of Campaign member counts and budgets within Campaign hierarchy
 * initialization of Campaign Member statuses for each new Campaign
 * control of the type of members allowed for a Campaign
