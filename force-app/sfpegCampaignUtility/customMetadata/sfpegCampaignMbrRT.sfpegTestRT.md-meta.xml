@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomMetadata xmlns="http://soap.sforce.com/2006/04/metadata" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+    <label>sfpegTestRT</label>
+    <protected>false</protected>
+    <values>
+        <field>CmStatusesAfter__c</field>
+        <value xsi:nil="true"/>
+    </values>
+    <values>
+        <field>CmStatuses__c</field>
+        <value xsi:type="xsd:string">[
+{&quot;HasResponded&quot;:false,&quot;IsDefault&quot;:false,&quot;Label&quot;:&quot;Step 3&quot;,&quot;SortOrder&quot;:3},
+{&quot;HasResponded&quot;:true,&quot;IsDefault&quot;:false,&quot;Label&quot;:&quot;Step 4&quot;,&quot;SortOrder&quot;:4}
+]</value>
+    </values>
+    <values>
+        <field>CmTypes__c</field>
+        <value xsi:type="xsd:string">Lead;Contact</value>
+    </values>
+    <values>
+        <field>HierarchyPropagation__c</field>
+        <value xsi:type="xsd:string">{&quot;NumberSent&quot;:&quot;NumberOfContacts&quot;}</value>
+    </values>
+</CustomMetadata>

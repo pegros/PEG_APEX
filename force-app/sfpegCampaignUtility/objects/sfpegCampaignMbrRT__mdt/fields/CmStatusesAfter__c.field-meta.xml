@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>CmStatusesAfter__c</fullName>
+    <description>List of CampaignMember status value to automatically initialize for a newly created Campaign after default status cleaning (as a JSON List of status records). Setting values here automatically triggers cleaning.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>List of CampaignMember status value to automatically initialize for a newly created Campaign after default status cleaning (as a JSON List of status records). Setting values here automatically triggers cleaning.</inlineHelpText>
+    <label>CM Statuses (after cleaning)</label>
+    <length>50000</length>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

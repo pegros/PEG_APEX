@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomLabels xmlns="http://soap.sforce.com/2006/04/metadata">
+    <labels>
+        <fullName>sfpegCampaignMemberTypeNotAllowed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <categories>PEG Apex Trigger Error Message</categories>
+        <shortDescription>Error message when Campaign Member type is not allowed for CM record type</shortDescription>
+        <value>Type of Campaign Member not allowed for RT {0}</value>
+    </labels>
+    <labels>
+        <fullName>sfpegCampaignMemberNotAllowed</fullName>
+        <language>en_US</language>
+        <protected>false</protected>
+        <categories>PEG Apex Trigger Error Message</categories>
+        <shortDescription>Error message when no Campaign Member is allowed for CM record type</shortDescription>
+        <value>No Campaign Member allowed with RT {0}</value>
+    </labels>
+</CustomLabels> 

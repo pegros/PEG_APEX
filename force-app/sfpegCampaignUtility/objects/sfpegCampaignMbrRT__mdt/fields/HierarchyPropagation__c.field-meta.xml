@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>HierarchyPropagation__c</fullName>
+    <description>Configuration of the Campaign fields to copy for hierarchy propagation (#Sent, Budget, Cost), as a JSON mapping of target/source fields on the Campaign object, based on the CampaignMemberRecordTypeId set on the Campaign.</description>
+    <fieldManageability>SubscriberControlled</fieldManageability>
+    <inlineHelpText>Configuration of the Campaign fields to copy for hierarchy propagation (#Sent, Budget, Cost), as a JSON mapping of target/source fields on the Campaign object, based on the CampaignMemberRecordTypeId set on the Campaign.</inlineHelpText>
+    <label>Hierarchy Propagation</label>
+    <length>100000</length>
+    <type>LongTextArea</type>
+    <visibleLines>5</visibleLines>
+</CustomField>

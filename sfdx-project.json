@@ -78,6 +78,28 @@
           "subscriberPackageVersionId": "04tJ7000000xDepIAE"
         }
       ]
+    },
+    {
+      "versionName": "July 2025",
+      "versionNumber": "1.0.0.NEXT",
+      "path": "force-app/sfpegCampaignUtility",
+      "default": false,
+      "package": "sfpegApex-campaigns",
+      "versionDescription": "Campaign management utility of the PEG_APEX package, see https://github.com/pegros/PEG_APEX/blob/master/help/sfpegCampaignUtility.md",
+      "postInstallUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegCampaignUtility.md#installation",
+      "releaseNotesUrl": "https://github.com/pegros/PEG_APEX/blob/master/help/sfpegCampaignUtility.md#release-notes",
+      "dependencies": [
+        {
+          "package": "sfpegApex-debug",
+          "versionNumber": "1.0.0.LATEST"
+        }
+      ],
+      "apexTestAccess": {
+        "permissionSets": [
+          "sfpegCampaignTest"
+        ],
+        "permissionSetLicenses": []
+      }
     }
   ],
   "name": "PEG_APEX",
@@ -86,12 +108,14 @@
   "sourceApiVersion": "63.0",
   "packageAliases": {
     "sfpegApex-debug": "0HoJ7000000XZCNKA4",
-    "sfpegApex-queueable": "0HoJ7000000XZCSKA4",
-    "sfpegApex-sharingGroups": "0HoJ7000000XZCXKA4",
-    "sfpegApex-queueableUX": "0HoJ7000000XZChKAO",
     "sfpegApex-debug@1.0.0-1": "04tJ7000000xH4dIAE",
+    "sfpegApex-queueable": "0HoJ7000000XZCSKA4",
     "sfpegApex-queueable@1.0.0-1": "04tJ7000000xH4iIAE",
+    "sfpegApex-sharingGroups": "0HoJ7000000XZCXKA4",
     "sfpegApex-sharingGroups@1.0.0-1": "04tJ7000000xH4nIAE",
-    "sfpegApex-queueableUX@1.0.0-1": "04tJ7000000xH4sIAE"
+    "sfpegApex-queueableUX": "0HoJ7000000XZChKAO",
+    "sfpegApex-queueableUX@1.0.0-1": "04tJ7000000xH4sIAE",
+    "sfpegApex-campaigns": "0HoJ7000000XZCmKAO",
+    "sfpegApex-campaigns@1.0.0-1": "04tJ7000000xH6oIAE"
   }
 }

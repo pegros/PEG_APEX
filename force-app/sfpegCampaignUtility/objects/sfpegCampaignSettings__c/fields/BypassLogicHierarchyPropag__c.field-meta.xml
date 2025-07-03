@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BypassLogicHierarchyPropag__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Flag to bypass the Campaign Hierarchy Propagation logic (Campaign before update)</description>
+    <inlineHelpText>Flag to bypass the Campaign Hierarchy Propagation logic (Campaign before update)</inlineHelpText>
+    <label>Bypass Hierarchy Propagation?</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

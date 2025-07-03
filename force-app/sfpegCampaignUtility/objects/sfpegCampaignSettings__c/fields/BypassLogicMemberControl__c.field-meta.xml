@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BypassLogicMemberControl__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Flag to bypass the Campaign Member Tyoe Control logic (CampaignMember before insert)</description>
+    <inlineHelpText>Flag to bypass the Campaign Member Tyoe Control logic (CampaignMember before insert)</inlineHelpText>
+    <label>Bypass Member Controls?</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>

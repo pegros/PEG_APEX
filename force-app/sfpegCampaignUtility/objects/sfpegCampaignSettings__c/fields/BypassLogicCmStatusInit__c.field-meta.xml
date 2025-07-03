@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<CustomField xmlns="http://soap.sforce.com/2006/04/metadata">
+    <fullName>BypassLogicCmStatusInit__c</fullName>
+    <defaultValue>false</defaultValue>
+    <description>Flag to bypass the Campaign CM Statuses initialization logic (Campaign after insert)</description>
+    <inlineHelpText>Flag to bypass the Campaign CM Statuses initialization logic (Campaign after insert)</inlineHelpText>
+    <label>Bypass Member Status Init?</label>
+    <trackTrending>false</trackTrending>
+    <type>Checkbox</type>
+</CustomField>
