@@ -13,7 +13,7 @@ actions and related lists to ease supervision of the Queueable processes.
 This extension may be installed and upgraded as the `sfpegApex-queueableUX` unlocked package
 directly on your Org via the installation link provided in the [release notes](#release-notes).
 
-⚠️ It requires the **[sfpegApex-queueable](help/sfpegQueueableUtility.md)** and **[sfpegApex-core](https://github.com/pegros/PEG_LIST)**
+⚠️ It requires the **[sfpegApex-queueable](help/sfpegQueueableUtility.md)** and **[sfpegList-core](https://github.com/pegros/PEG_LIST)**
 packages to be already installed on your Org. These two packages come with their own permissions which need to be assigned to the proper users.
 
 ⚠️ After package installation, you need to change the default Lightning record page for **Queueable Log** records by activating

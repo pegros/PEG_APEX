@@ -40,7 +40,7 @@ for which some or all of the proposed logic should be applied.
 Their `Label` and `Name` of each metadata record should match the `Label`and `DeveloperName`of the CampaignMember record type
 to which their other properties (e.g. The `CM Types Allowed`, `CM Statuses`) are applied.
 
-![RecordTypes on Campaign record](/media/sfpegCampaignRTs.png)
+![Configuration metadata per CampaignMemver RT](/media/sfpegCampaignMetadata.png)
 
 ⚠️ Pay attention to the `DeveloperName` which is the information used by the implemented logic to match
 record RecordTypes and metadata configuration. 
@@ -50,6 +50,7 @@ record RecordTypes and metadata configuration.
 * the `CampaignMemberRecordTypeId` field on the `Campaign` records
 
 ⚠️ Beware of the 2 `RecordType`fields available on the Campaign records!
+
 ![RecordTypes on Campaign record](/media/sfpegCampaignRTs.png)
 
 
@@ -180,6 +181,7 @@ reporting purposes.
 
 If needed, you may also bypass part or all of the implemented `Campaign` and/or `CampaignMember` trigger
 logic by checking the proper flags in the `sfpegCampaignSettings` custom setting.
+
 ![Campaign Setting](/media/sfpegCampaignSetting.png)
 
 ## Package Content
