@@ -67,7 +67,8 @@ However, some Campaign rolled-up fields are not automatically computed and requi
 The proposed feature enables to define custom rollup fields on the `Campaign` object based on the 
 `CampaignMember` related list to automatically evaluate all or some of these fields from related
 CampaignMember records (e.g. by counting all members in certains status or aggregating individual
-member costs e.g. based on the communication channel used).
+member costs e.g. based on the communication channel used) and then copy their values in the standard
+fields used in the standard hierarchy rollup mechanism.
 
 The configuration should be done in the `Hierarchy Propagation` field of the `sfpegCampaignMbrRT`
 metadata record, as a simple JSON map of target / source API field names, e.g.
@@ -86,9 +87,11 @@ of all direct members of a Campaign and is copied into the standard `ActualCost`
 
 ⚠️ Using such custom rollup summary fields enables to enforce an update on the Campaign related to the 
 CampaignMember being created / updated / deleted and thus the propagation of the values.
-When choosing a configuration like `{"NumberSent":"NumberOfContacts"}`, the propagation only
-happens when the Campaign records are actually updated (no Campaign trigger is indeed 
-executed upon `NumberOfContacts` update upon new CampaignMember creation).
+* When choosing a configuration like `{"NumberSent":"NumberOfContacts"}`, the propagation only
+happens when the Campaign records are actually updated. No Campaign trigger is indeed executed upon
+`NumberOfContacts` update upon new CampaignMember creation.
+* When relying on a `count` or `sum` rollup summary field, the relmated Campaign records are actually updated
+and the propagation takes place automatically.
 
 
 ### Campaign Member Statuses Initialization
