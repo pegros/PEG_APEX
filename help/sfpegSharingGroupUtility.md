@@ -365,7 +365,7 @@ Install it:
 ### March 2026 - v1.1
 
 Version content:
-* [Issue #2](/issues/2) on Public Group management rights for standard users addressed
+* [Issue #2](https://github.com/pegros/PEG_APEX/issues/2) on Public Group management rights for standard users addressed
 
 Install it:
 - from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04td2000000LXqbAAG) for production orgs,
