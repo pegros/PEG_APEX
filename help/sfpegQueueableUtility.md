@@ -295,10 +295,17 @@ max 5 job iterations are allowed, an exception being raised at the 6th.
 max logging level in the `sfpegDebugSetting` custom setting (see **[sfpegApex-debug](/help/sfpegDebugUtility.md)**
 for more information)
 
+
 ## Release Notes
 
 ### June 2025 - v1.0
+
+Version content:
 * First version with the new unlocked package structure.
 * Minor code refactoring.
 * [Issue #1](/issues/1) on daily asynch Apex Org limit addressed
-* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4iIAE).
+
+Install it:
+- from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4iIAE) for production orgs,
+- from [here ⬇️](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4iIAE) for sandboxes,
+- or by adding the following relative URL to your Org domain: `/packaging/installPackage.apexp?p0=04tJ7000000xH4iIAE`

@@ -155,6 +155,12 @@ This is not a problem related to this utility class.
 ## Release Notes
 
 ### June 2025 - v1.0
+
+Version content:
 * First version with the new unlocked package structure.
 * Minor code refactoring.
-* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4dIAE).
+
+Install it:
+- from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4dIAE) for production orgs,
+- from [here ⬇️](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4dIAE) for sandboxes,
+- or by adding the following relative URL to your Org domain: `/packaging/installPackage.apexp?p0=04tJ7000000xH4dIAE`

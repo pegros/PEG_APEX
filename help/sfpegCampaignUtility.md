@@ -213,5 +213,11 @@ for more information)
 ## Release Notes
 
 ### July 2025 - v1.0
+
+Version content:
 * First version
-* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH6oIAE).
+
+Install it:
+- from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH6oIAE) for production orgs,
+- from [here ⬇️](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH6oIAE) for sandboxes,
+- or by adding the following relative URL to your Org domain: `/packaging/installPackage.apexp?p0=04tJ7000000xH6oIAE`
