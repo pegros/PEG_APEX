@@ -1,12 +1,15 @@
 /***
 * @description  Utility Class for the management of public groups associated to a
 *               structure records and memberships records.
-*               It is a generalization of the sfpegMultiSharingGroup_UTL class
-*               to support optional upward and downward group hierarchies and
-*               allow for membership in different Objects (instead of one).
+*               It is a rework / generalization of the original sfpegMultiSharingGroup_UTL
+*               class (no longer in the repository) to support optional upward and downward
+*               group hierarchies and allow for membership in different Objects (instead of one).
+*               This class has been set in without sharing mode to ensure that
+*               any user triggering a Group reevaluation process does not face any
+*               access rights issues (no need to provide extensive access rights
+*               on Public Groups and their members to everyone).
 * @author       P-E GROS
 * @date         Apr 2024
-* @see sfpegMultiSharingGroup_UTL
 * @see PEG_APEX package (https://github.com/pegros/PEG_APEX)
 *
 * Legal Notice
@@ -34,7 +37,7 @@
 * SOFTWARE.
 ***/
 
-public with sharing class sfpegGroupManagement_UTL  {  // NOPMD bypass naming convention
+public without sharing class sfpegGroupManagement_UTL  {  // NOPMD bypass naming convention
 
     //################################################################################################
     // STATIC CONSTANTS

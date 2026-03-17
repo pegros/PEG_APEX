@@ -31,8 +31,8 @@
       ]
     },
     {
-      "versionName": "June 2025",
-      "versionNumber": "1.0.0.NEXT",
+      "versionName": "March 2026",
+      "versionNumber": "1.1.0.NEXT",
       "path": "force-app/sfpegSharingGroupUtility",
       "default": false,
       "package": "sfpegApex-sharingGroups",
@@ -116,6 +116,7 @@
     "sfpegApex-queueableUX": "0HoJ7000000XZChKAO",
     "sfpegApex-queueableUX@1.0.0-1": "04tJ7000000xH4sIAE",
     "sfpegApex-campaigns": "0HoJ7000000XZCmKAO",
-    "sfpegApex-campaigns@1.0.0-1": "04tJ7000000xH6oIAE"
+    "sfpegApex-campaigns@1.0.0-1": "04tJ7000000xH6oIAE",
+    "sfpegApex-sharingGroups@1.1.0-1": "04td2000000LXqbAAG"
   }
 }

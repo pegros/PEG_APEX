@@ -351,7 +351,23 @@ for more information)
 ## Release Notes
 
 ### June 2025 - v1.0
+
+Version content:
 * First version with the new unlocked package structure.
 * Minor code refactoring.
-* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4nIAE).
 
+Install it:
+- from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4nIAE) for production orgs,
+- from [here ⬇️](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4nIAE) for sandboxes,
+- or by adding the following relative URL to your Org domain: `/packaging/installPackage.apexp?p0=04tJ7000000xH4nIAE`
+
+
+### March 2026 - v1.1
+
+Version content:
+* [Issue #2](/issues/2) on Public Group management rights for standard users addressed
+
+Install it:
+- from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04td2000000LXqbAAG) for production orgs,
+- from [here ⬇️](https://test.salesforce.com/packaging/installPackage.apexp?p0=04td2000000LXqbAAG) for sandboxes,
+- or by adding the following relative URL to your Org domain: `/packaging/installPackage.apexp?p0=04td2000000LXqbAAG`
