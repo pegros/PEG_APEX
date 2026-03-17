@@ -303,7 +303,7 @@ for more information)
 Version content:
 * First version with the new unlocked package structure.
 * Minor code refactoring.
-* [Issue #1](/issues/1) on daily asynch Apex Org limit addressed
+* [Issue #1](https://github.com/pegros/PEG_APEX/issues/1) on daily asynch Apex Org limit addressed
 
 Install it:
 - from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4iIAE) for production orgs,
