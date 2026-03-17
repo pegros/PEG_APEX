@@ -4,7 +4,7 @@
 
 The **sfpegQueueableUX** is an extension to the **[sfpegQueueableUtility](help/sfpegQueueableUtility.md)** Apex package.
 
-It bascially provides an enriched **Queueable Log** record page with a set of **[PEG_LIST](https://github.com/pegros/PEG_LIST)**
+It basically provides an enriched **Queueable Log** record page with a set of **[PEG_LIST](https://github.com/pegros/PEG_LIST)**
 actions and related lists to ease supervision of the Queueable processes.
 
 
@@ -66,7 +66,6 @@ such as the _Recent Queueable Logs_ one (as done in the extended layout).
 ![sfpegQueueableLog Recent Logs with Actions](/media/sfpegQueueableRecentLogsWithActions.png)
 
 
-
 ## Package Content
 
 The **sfpegQueueableUX** folder contains:
@@ -88,6 +87,12 @@ from its whole set of customisation and extension capabilities.
 ## Release Notes
 
 ### June 2025 - v1.0
+
+Version content:
 * First version with the new unlocked package structure.
 * Lightning record page layout added
-* Install it from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4sIAE).
+
+Install it:
+- from [here ⬇️](https://login.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4sIAE) for production orgs,
+- from [here ⬇️](https://test.salesforce.com/packaging/installPackage.apexp?p0=04tJ7000000xH4sIAE) for sandboxes,
+- or by adding the following relative URL to your Org domain: `/packaging/installPackage.apexp?p0=04tJ7000000xH4sIAE`
